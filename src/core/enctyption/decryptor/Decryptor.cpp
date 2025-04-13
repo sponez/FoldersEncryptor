@@ -10,7 +10,7 @@ namespace fe {
 
         if (
             crypto_secretstream_xchacha20poly1305_pull(
-                &context,
+                context,
                 decipher.get(), &decryptedLen,
                 &tag,
                 data, size,

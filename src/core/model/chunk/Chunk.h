@@ -26,6 +26,7 @@ namespace fe {
             static Chunk fileBlock(std::vector<unsigned char> block);
             static const Chunk END_OF_FILE;
             static const Chunk END_OF_STREAM;
+            static const Chunk NULL_CHUNK;
 
             Chunk(Tag tag, std::size_t size, const unsigned char* data)
                 : _tag(tag), _size(size), _content(std::make_unique<unsigned char[]>(size)) {
@@ -74,6 +75,7 @@ namespace fe {
         FILE_BEGIN,
         FILE_CONTENT_BLOCK,
         END_OF_FILE,
-        END_OF_STREAM
+        END_OF_STREAM,
+        NULL_CHUNK
     };
 }

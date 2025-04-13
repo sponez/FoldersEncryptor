@@ -3,17 +3,18 @@
 #include <vector>
 #include <cstring>
 
+
 #include "../../enctyption/decryptor/Decryptor.h"
 
 namespace fe {
-    inline Chunk::Tag ChunkDeserializer::deserializeTag(const unsigned char* serializedTag) {
+    Chunk::Tag ChunkDeserializer::deserializeTag(const unsigned char* serializedTag) {
         Chunk::Tag tag;
         std::memcpy(&tag, serializedTag, Chunk::TAG_SIZE);
         return tag;
     }
 
     std::size_t ChunkDeserializer::deserializeSize(const unsigned char* serializedSize) {
-        DecryptorResult result = decryptor.decrypt(serializedSize, ENCRYPTED_SIZE_SIZE);
+        DecryptorResult result = decryptor.decrypt(serializedSize, ChunkDeserializer::ENCRYPTED_SIZE_SIZE);
 
         std::size_t size;
         std::memcpy(&size, result.data.get(), Chunk::SIZE_SIZE);

@@ -24,4 +24,6 @@ namespace fe {
     const Chunk Chunk::END_OF_FILE = Chunk(Tag::END_OF_FILE, 0, nullptr);
     
     const Chunk Chunk::END_OF_STREAM = Chunk(Tag::END_OF_STREAM, 0, nullptr);
+
+    const Chunk Chunk::NULL_CHUNK = Chunk(Tag::NULL_CHUNK, 0, nullptr);
 }

@@ -11,13 +11,14 @@ namespace fe {
         serializeAndWrite(headerChunk);
     }
 
-    void EncryptingWriter::writeFile(const std::filesystem::path& path, const std::size_t& bufferSize) {
-        std::ifstream in(path, std::ios::binary);
+    void EncryptingWriter::writeFile(const std::filesystem::path rootPath, const std::filesystem::path& filePath, const std::size_t& bufferSize) {
+        std::ifstream in(filePath, std::ios::binary);
         if (!in) {
             throw std::runtime_error("Error occurs while opening file");
         }
 
-        Chunk filePathChunk = Chunk::filePath(path);
+        std::filesystem::path relativeFilePath = std::filesystem::relative(filePath, rootPath);
+        Chunk filePathChunk = Chunk::filePath(relativeFilePath);
         serializeAndWrite(filePathChunk);
 
         while (in.peek() != EOF) {

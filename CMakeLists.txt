@@ -34,11 +34,14 @@ set(APP_SOURCES
     src/core/enctyption/encryptor/Encryptor.tpp
     src/core/enctyption/decryptor/Decryptor.cpp
     src/core/controller/encryptor/EncryptionController.cpp
+    src/core/controller/decryptor/DecryptionController.cpp
+    src/core/controller/utils/ControllerUtils.cpp
 
     src/core/model/chunk/Chunk.cpp
     src/core/serialization/serializer/ChunkSerializer.cpp
     src/core/serialization/deserializer/ChunkDeserializer.cpp
     src/core/io/writer/EncryptingWriter.cpp
+    src/core/io/reader/DecryptingReader.cpp
 
     src/utils/files/FilesUtils.cpp
 )

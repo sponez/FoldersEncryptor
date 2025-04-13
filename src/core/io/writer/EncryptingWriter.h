@@ -17,7 +17,7 @@ namespace fe {
 
         void writeSalt(const unsigned char* salt);
         void writeHeader(const unsigned char* header);
-        void writeFile(const std::filesystem::path& path, const std::size_t& bufferSize);
+        void writeFile(const std::filesystem::path rootPath, const std::filesystem::path& filePath, const std::size_t& bufferSize);
         void addEndTag();
 
     private:

@@ -12,11 +12,12 @@ namespace fe {
     public:
         inline static const uint8_t ENCRYPTION_OVERHEAD = crypto_secretstream_xchacha20poly1305_ABYTES;
 
-        Decryptor(SecretStreamContext context): context(context) {}
+        Decryptor() {}
+        Decryptor(SecretStreamContext* context): context(context) {}
 
         DecryptorResult decrypt(const unsigned char* data, unsigned long long size);
         
     private:
-        SecretStreamContext context;
+        SecretStreamContext* context;
     };
 }

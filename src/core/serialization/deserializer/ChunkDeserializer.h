@@ -11,7 +11,8 @@ namespace fe {
 
         static Chunk::Tag deserializeTag(const unsigned char* serializedTag);
 
-        ChunkDeserializer(Decryptor& decryptor): decryptor(decryptor) {}
+        ChunkDeserializer() {}
+        ChunkDeserializer(Decryptor decryptor): decryptor(decryptor) {}
 
         std::size_t deserializeSize(const unsigned char* serializedSize);
         Chunk deserializeChunk(Chunk::Tag tag, std::size_t size, const unsigned char* serializedContent);

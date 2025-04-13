@@ -2,6 +2,7 @@
 #include "GuiConstants.h"
 #include "../selector/Selector.h"
 #include "../core/controller/encryptor/EncryptionController.h"
+#include "../core/controller/decryptor/DecryptionController.h"
 #include <iostream>
 #include <optional>
 #include <stdlib.h>
@@ -134,7 +135,14 @@ void GuiLayer::encryptDataWindow() {
 
     if (ImGui::Button(OK, ImVec2(buttonWidth, buttonHeight))) {
         std::size_t bufferSize = 4096;
-        fe::EncryptionController::encrypt(outputNameString, selectedPaths, password, bufferSize);
+        std::filesystem::path root = selectedPaths[0].parent_path();
+        fe::EncryptionController::encrypt(
+            outputNameString,
+            selectedPaths[0].parent_path(),
+            selectedPaths,
+            password,
+            bufferSize
+        );
         std::fill(outputName.data(), outputName.data() + outputName.size(), '\0');
         currentWindow = Window::MAIN;
         selectedPaths.clear();
@@ -147,6 +155,12 @@ void GuiLayer::decryptDataWindow() {
     }
 
     if (ImGui::Button(OK, ImVec2(buttonWidth, buttonHeight))) {
+        fe::DecryptionController::decrypt(
+            selectedPaths[0].parent_path(),
+            selectedPaths[0],
+            password
+        );
+
         currentWindow = Window::MAIN;
         selectedPaths.clear();
     }
