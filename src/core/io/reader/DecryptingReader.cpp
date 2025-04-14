@@ -9,18 +9,18 @@ namespace fe {
 
         switch (tag)
         {
-        case Chunk::Tag::SALT: {
+        case Chunk::Tag::FE_SALT: {
             auto saltByte = std::make_unique<const char[]>(Chunk::SALT_LENGTH);
             inStream.read(const_cast<char*>(saltByte.get()), Chunk::SALT_LENGTH);
             return Chunk::salt(reinterpret_cast<const unsigned char*>(saltByte.get()));
         }
-        case Chunk::Tag::HEADER: {
+        case Chunk::Tag::FE_HEADER: {
             auto headertByte = std::make_unique<const char[]>(Chunk::HEADER_LENGTH);
             inStream.read(const_cast<char*>(headertByte.get()), Chunk::HEADER_LENGTH);
             return Chunk::header(reinterpret_cast<const unsigned char*>(headertByte.get()));
         }
-        case Chunk::Tag::FILE_BEGIN:
-        case Chunk::Tag::FILE_CONTENT_BLOCK: {
+        case Chunk::Tag::FE_FILE_BEGIN:
+        case Chunk::Tag::FE_FILE_CONTENT_BLOCK: {
             auto sizeByte = std::make_unique<const char[]>(ChunkDeserializer::ENCRYPTED_SIZE_SIZE);
             std::size_t size;
             inStream.read(const_cast<char*>(sizeByte.get()), ChunkDeserializer::ENCRYPTED_SIZE_SIZE);
@@ -30,14 +30,14 @@ namespace fe {
             inStream.read(const_cast<char*>(blockByte.get()), size + Decryptor::ENCRYPTION_OVERHEAD);
             return chunkDeserializer.deserializeChunk(tag, size, reinterpret_cast<const unsigned char*>(blockByte.get()));
         }
-        case Chunk::Tag::END_OF_FILE:
-            return Chunk::END_OF_FILE;
-        case Chunk::Tag::END_OF_STREAM:
-            return Chunk::END_OF_STREAM;
+        case Chunk::Tag::FE_END_OF_FILE:
+            return Chunk::FE_END_OF_FILE;
+        case Chunk::Tag::FE_END_OF_STREAM:
+            return Chunk::FE_END_OF_STREAM;
         default:
             break;
         }
 
-        return Chunk::NULL_CHUNK;
+        return Chunk::FE_NULL_CHUNK;
     }
 }

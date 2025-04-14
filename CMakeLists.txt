@@ -42,6 +42,8 @@ set(APP_SOURCES
     src/core/serialization/deserializer/ChunkDeserializer.cpp
     src/core/io/writer/EncryptingWriter.cpp
     src/core/io/reader/DecryptingReader.cpp
+    src/core/processor/Processor.cpp
+    src/core/processor/explorer/ExplorerTool.cpp
 
     src/utils/files/FilesUtils.cpp
 )
@@ -61,6 +63,9 @@ set(NFD_SOURCES
 set(VCPKG_INSTALLED_DIR "P:/DevelopmentTools/CppLibs/vcpkg/installed/x64-mingw-static")
 include_directories(${VCPKG_INSTALLED_DIR}/include)
 link_directories(${VCPKG_INSTALLED_DIR}/lib)
+
+# ──────────────── THREADS ────────────────
+find_package(Threads REQUIRED)
 
 # ──────── EXECUTABLE ────────
 add_executable(FoldersEncryptor
@@ -82,4 +87,5 @@ target_link_libraries(FoldersEncryptor
     winmm
     version
     sodium
+    Threads::Threads
 )

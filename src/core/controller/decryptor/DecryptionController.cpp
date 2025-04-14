@@ -13,13 +13,13 @@ namespace fe {
 
         DecryptingReader reader(in);
         Chunk currentChunk = reader.readNextChunk();
-        while (currentChunk.tag() != Chunk::Tag::END_OF_STREAM) {
+        while (currentChunk.tag() != Chunk::Tag::FE_END_OF_STREAM) {
             switch (currentChunk.tag())
             {
-            case Chunk::Tag::SALT:
+            case Chunk::Tag::FE_SALT:
                 initReaderContext(currentChunk, password, reader);
                 break;
-            case Chunk::Tag::FILE_BEGIN:
+            case Chunk::Tag::FE_FILE_BEGIN:
                 recreateFile(currentChunk, outputPath, reader);
                 break;
             default:
@@ -34,7 +34,7 @@ namespace fe {
 
     void DecryptionController::initReaderContext(Chunk &saltChunk, std::array<char, 256>& password, DecryptingReader &reader) {
         Chunk headerChunk = reader.readNextChunk();
-        if (headerChunk.tag() != Chunk::Tag::HEADER) {
+        if (headerChunk.tag() != Chunk::Tag::FE_HEADER) {
             throw std::runtime_error("Data integrity has been compromised");
         }
 
@@ -53,8 +53,8 @@ namespace fe {
         std::ofstream out(outputFilePath, std::ios::binary);
 
         Chunk currentChunk = reader.readNextChunk();
-        while (currentChunk.tag() != Chunk::Tag::END_OF_FILE) {
-            if (currentChunk.tag() != Chunk::Tag::FILE_CONTENT_BLOCK) {
+        while (currentChunk.tag() != Chunk::Tag::FE_END_OF_FILE) {
+            if (currentChunk.tag() != Chunk::Tag::FE_FILE_CONTENT_BLOCK) {
                 throw std::runtime_error("Data integrity has been compromised");
             }
 

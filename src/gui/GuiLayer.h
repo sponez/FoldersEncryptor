@@ -12,14 +12,15 @@ public:
     void imGuiWindow();
 
 private:
-    inline void mainWindow();
-    inline void encryptButton();
-    inline void dectyptButton();
-    inline void openButton();
-    inline bool chooseTypePopup();
+    void mainWindow();
+    void encryptButton();
+    void dectyptButton();
+    void openButton();
+    bool chooseTypePopup();
 
-    inline void encryptDataWindow();
-    inline void decryptDataWindow();
+    void encryptDataWindow();
+    void decryptDataWindow();
+    void temporaryDecryptDataWindow();
 
 private:
     ImVec2 displaySize;

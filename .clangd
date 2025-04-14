@@ -1,0 +1,7 @@
+CompileFlags:
+  Add: [
+    "-I", "C:/mingw64/lib/gcc/x86_64-w64-mingw32/14.2.0/include",
+    "-I", "C:/mingw64/include",
+    "-I", "C:/mingw64/include/c++",
+    "-I", "C:/mingw64/include/c++/x86_64-w64-mingw32"
+  ]

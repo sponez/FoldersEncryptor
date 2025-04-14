@@ -1,8 +1,7 @@
 #include "GuiLayer.h"
 #include "GuiConstants.h"
 #include "../selector/Selector.h"
-#include "../core/controller/encryptor/EncryptionController.h"
-#include "../core/controller/decryptor/DecryptionController.h"
+#include "../core/processor/Processor.h"
 #include <iostream>
 #include <optional>
 #include <stdlib.h>
@@ -48,6 +47,10 @@ void GuiLayer::mainWindow() {
         decryptDataWindow();
         break;
 
+    case TEMPORARY_DECRYPT_DATA:
+        temporaryDecryptDataWindow();
+        break;
+
     default:
         break;
     }
@@ -85,6 +88,10 @@ void GuiLayer::dectyptButton() {
 void GuiLayer::openButton() {
     if (ImGui::Button(OPEN_BUTTON, ImVec2(buttonWidth, buttonHeight))) {
         auto file = Selector::selectFeFile();
+        if (file) {
+            selectedPaths.push_back(*file);
+            currentWindow = Window::TEMPORARY_DECRYPT_DATA;
+        }
     }
 }
 
@@ -136,7 +143,7 @@ void GuiLayer::encryptDataWindow() {
     if (ImGui::Button(OK, ImVec2(buttonWidth, buttonHeight))) {
         std::size_t bufferSize = 4096;
         std::filesystem::path root = selectedPaths[0].parent_path();
-        fe::EncryptionController::encrypt(
+        fe::Processor::processEncryptOption(
             outputNameString,
             selectedPaths[0].parent_path(),
             selectedPaths,
@@ -155,8 +162,24 @@ void GuiLayer::decryptDataWindow() {
     }
 
     if (ImGui::Button(OK, ImVec2(buttonWidth, buttonHeight))) {
-        fe::DecryptionController::decrypt(
+        fe::Processor::processDecryptOption(
             selectedPaths[0].parent_path(),
+            selectedPaths[0],
+            password
+        );
+
+        currentWindow = Window::MAIN;
+        selectedPaths.clear();
+    }
+}
+
+void GuiLayer::temporaryDecryptDataWindow() {
+    if (!selectedPaths.empty()) {
+        ImGui::InputText(PASSWORD, password.data(), password.size());
+    }
+
+    if (ImGui::Button(OK, ImVec2(buttonWidth, buttonHeight))) {
+        fe::Processor::processTemporaryDecryptOption(
             selectedPaths[0],
             password
         );

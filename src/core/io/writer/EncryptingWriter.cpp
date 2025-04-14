@@ -37,14 +37,14 @@ namespace fe {
             serializeAndWrite(contentBlock);
         }
 
-        Chunk fileEnd = Chunk::END_OF_FILE;
+        Chunk fileEnd = Chunk::FE_END_OF_FILE;
         serializeAndWrite(fileEnd);
 
         in.close();
     }
 
     void EncryptingWriter::addEndTag() {
-        Chunk streamEnd = Chunk::END_OF_STREAM;
+        Chunk streamEnd = Chunk::FE_END_OF_STREAM;
         serializeAndWrite(streamEnd);
     }
 

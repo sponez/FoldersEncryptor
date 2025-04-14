@@ -24,9 +24,9 @@ namespace fe {
             static Chunk header(const unsigned char* header);
             static Chunk filePath(std::filesystem::path path);
             static Chunk fileBlock(std::vector<unsigned char> block);
-            static const Chunk END_OF_FILE;
-            static const Chunk END_OF_STREAM;
-            static const Chunk NULL_CHUNK;
+            static const Chunk FE_END_OF_FILE;
+            static const Chunk FE_END_OF_STREAM;
+            static const Chunk FE_NULL_CHUNK;
 
             Chunk(Tag tag, std::size_t size, const unsigned char* data)
                 : _tag(tag), _size(size), _content(std::make_unique<unsigned char[]>(size)) {
@@ -70,12 +70,12 @@ namespace fe {
     };
 
     enum class Chunk::Tag : uint8_t {
-        SALT,
-        HEADER,
-        FILE_BEGIN,
-        FILE_CONTENT_BLOCK,
-        END_OF_FILE,
-        END_OF_STREAM,
-        NULL_CHUNK
+        FE_SALT,
+        FE_HEADER,
+        FE_FILE_BEGIN,
+        FE_FILE_CONTENT_BLOCK,
+        FE_END_OF_FILE,
+        FE_END_OF_STREAM,
+        FE_NULL_CHUNK
     };
 }
