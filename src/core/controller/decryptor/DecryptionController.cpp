@@ -50,6 +50,8 @@ namespace fe {
     void DecryptionController::recreateFile(Chunk& pathChunk, const std::filesystem::path& outputPath, DecryptingReader &reader) {
         std::string pathStr(reinterpret_cast<const char*>(pathChunk.data()), pathChunk.size());
         std::filesystem::path outputFilePath = outputPath / std::filesystem::u8path(pathStr);
+        
+        std::filesystem::create_directories(outputFilePath.parent_path());
         std::ofstream out(outputFilePath, std::ios::binary);
 
         Chunk currentChunk = reader.readNextChunk();

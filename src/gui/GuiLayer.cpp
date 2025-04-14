@@ -2,6 +2,7 @@
 #include "GuiConstants.h"
 #include "../selector/Selector.h"
 #include "../core/processor/Processor.h"
+#include "../utils/files/FilesUtils.h"
 #include <iostream>
 #include <optional>
 #include <stdlib.h>
@@ -103,6 +104,7 @@ bool GuiLayer::chooseTypePopup() {
             auto folder = Selector::selectFolder();
             if (folder) {
                 selectedPaths = *folder;
+                isFolder = true;
             }
             ImGui::CloseCurrentPopup();
             result = !(folder == std::nullopt);
@@ -112,6 +114,7 @@ bool GuiLayer::chooseTypePopup() {
             auto files = Selector::selectMultipleFiles();
             if (files) {
                 selectedPaths = *files;
+                isFolder = false;
             }
             ImGui::CloseCurrentPopup();
             result = !(files == std::nullopt);
@@ -125,14 +128,13 @@ bool GuiLayer::chooseTypePopup() {
 
 void GuiLayer::encryptDataWindow() {
     std::string outputNameString;
+    std::filesystem::path rootPath;
+    bool isOk = false;
 
     if (selectedPaths.size() == 1) {
-        ImGui::InputText(PASSWORD, password.data(), password.size());
+        ImGui::InputText(PASSWORD, password.data(), password.size(), ImGuiInputTextFlags_Password);
 
-        outputNameString = selectedPaths[0]
-            .generic_u8string()
-            .append(".")
-            .append(FILENAME_EXTENSION);
+        outputNameString = selectedPaths[0].generic_u8string();
     } else {
         ImGui::InputText(OUTPUT_FILE_NAME, outputName.data(), outputName.size());
         ImGui::InputText(PASSWORD, password.data(), password.size(), ImGuiInputTextFlags_Password);
@@ -140,25 +142,39 @@ void GuiLayer::encryptDataWindow() {
         outputNameString = outputName.data();
     }
 
+    outputNameString += (std::string)"." + FILENAME_EXTENSION;
+    rootPath = std::filesystem::path(selectedPaths[0].parent_path());
+
     if (ImGui::Button(OK, ImVec2(buttonWidth, buttonHeight))) {
+        std::filesystem::path folderToDelete;
+        if (isFolder) {
+            folderToDelete = std::filesystem::path(selectedPaths[0]);
+            selectedPaths = FilesUtils::unpack(selectedPaths[0]);
+        }
+
         std::size_t bufferSize = 4096;
-        std::filesystem::path root = selectedPaths[0].parent_path();
         fe::Processor::processEncryptOption(
             outputNameString,
-            selectedPaths[0].parent_path(),
+            rootPath,
             selectedPaths,
             password,
             bufferSize
         );
+        
+        if(isFolder) {
+            std::filesystem::remove_all(folderToDelete);
+        }
+
         std::fill(outputName.data(), outputName.data() + outputName.size(), '\0');
         currentWindow = Window::MAIN;
         selectedPaths.clear();
+        isFolder = false;
     }
 }
 
 void GuiLayer::decryptDataWindow() {
     if (!selectedPaths.empty()) {
-        ImGui::InputText(PASSWORD, password.data(), password.size());
+        ImGui::InputText(PASSWORD, password.data(), password.size(), ImGuiInputTextFlags_Password);
     }
 
     if (ImGui::Button(OK, ImVec2(buttonWidth, buttonHeight))) {
@@ -175,7 +191,7 @@ void GuiLayer::decryptDataWindow() {
 
 void GuiLayer::temporaryDecryptDataWindow() {
     if (!selectedPaths.empty()) {
-        ImGui::InputText(PASSWORD, password.data(), password.size());
+        ImGui::InputText(PASSWORD, password.data(), password.size(), ImGuiInputTextFlags_Password);
     }
 
     if (ImGui::Button(OK, ImVec2(buttonWidth, buttonHeight))) {

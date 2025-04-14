@@ -8,7 +8,7 @@ namespace fe {
         std::array<char, 256>& password,
         const std::size_t& bufferSize
     ) {
-        auto outputPath = FilesUtils::determineOutputPath(filesPaths, outputFilename);
+        auto outputPath = rootPath / outputFilename;
         std::ofstream out(outputPath, std::ios::binary);
         if (!out.is_open()) {
             throw std::runtime_error("Failed to open output file");

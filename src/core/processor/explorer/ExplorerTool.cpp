@@ -5,6 +5,7 @@ namespace fe {
         std::string tempFolderName = "temp";
         std::filesystem::path tempFolder = folderPath / tempFolderName;
         std::filesystem::create_directories(tempFolder);
+        makeFolderHidden(tempFolder);
 
         while (!std::filesystem::exists(tempFolder)) {
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -95,5 +96,16 @@ namespace fe {
         if (index) { VariantClear(index); }
         if (disp) { disp->Release(); }
         if (browser) { browser -> Release(); }
+    }
+
+    void ExplorerTool::makeFolderHidden(const std::filesystem::path& folderPath) {
+        SetFileAttributesW(folderPath.wstring().c_str(), FILE_ATTRIBUTE_HIDDEN);
+    }
+    void ExplorerTool::removeReadOnlyAttribute(const std::filesystem::path &path) {
+        DWORD attributes = GetFileAttributesW(path.wstring().c_str());
+        if (attributes != INVALID_FILE_ATTRIBUTES && (attributes & FILE_ATTRIBUTE_READONLY)) {
+            attributes &= ~FILE_ATTRIBUTE_READONLY;
+            SetFileAttributesW(path.wstring().c_str(), attributes);
+        }
     }
 }

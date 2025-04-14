@@ -31,4 +31,5 @@ private:
     std::vector<std::filesystem::path> selectedPaths;
     std::array<char, 256> outputName = {};
     std::array<char, 256> password = {};
+    bool isFolder = false;
 };

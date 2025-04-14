@@ -61,6 +61,8 @@ namespace fe {
     }
 
     void Processor::secureDelete(const std::filesystem::path& path, const std::size_t& bufferSize) {
+        ExplorerTool::removeReadOnlyAttribute(path);
+
         if (!std::filesystem::exists(path) || !std::filesystem::is_regular_file(path)) {
             return;
         }
@@ -68,7 +70,7 @@ namespace fe {
         std::uintmax_t size = std::filesystem::file_size(path);
         std::fstream file(path, std::ios::in | std::ios::out | std::ios::binary);
         if (!file.is_open()) {
-            throw std::runtime_error("");
+            throw std::runtime_error("Failed to delete file");
         }
 
         std::vector<char> wipeBuffer(bufferSize, '\0');
@@ -88,6 +90,7 @@ namespace fe {
         ss << "__fe_temp-" << std::rand() << "__";
         std::filesystem::path tempDir = std::filesystem::temp_directory_path() / ss.str();
         std::filesystem::create_directories(tempDir);
+        ExplorerTool::makeFolderHidden(tempDir);
 
         while (!std::filesystem::exists(tempDir)) {
             std::this_thread::sleep_for(std::chrono::milliseconds(10));

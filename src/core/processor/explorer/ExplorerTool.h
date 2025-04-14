@@ -17,7 +17,9 @@ namespace fe {
         public:
             static void openPathInExplorer(const std::filesystem::path& folderPath);
             static bool isFolderOpenInExplorer(const std::filesystem::path& targetPath);
-
+            static void makeFolderHidden(const std::filesystem::path& folderPath);
+            static void removeReadOnlyAttribute(const std::filesystem::path& path);
+            
         private:
             static void initFolderWindowIndex(IShellWindows* shellWindows, IDispatch* disp, long& lIndex, VARIANT& index);
             static void release(VARIANT* index = nullptr, IDispatch* disp = nullptr, IWebBrowserApp* browser = nullptr);
