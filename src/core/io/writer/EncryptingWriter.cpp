@@ -1,26 +1,22 @@
 #include "EncryptingWriter.h"
 
+#include <iostream>
+
 namespace fe {
     void EncryptingWriter::writeSalt(const unsigned char* salt) {
         Chunk saltChunk = Chunk::salt(salt);
-        serializeAndWrite(saltChunk);
+        queueToEncrypt.push(saltChunk, index);
+        index++;
     }
 
-    void EncryptingWriter::writeHeader(const unsigned char* header) {
-        Chunk headerChunk = Chunk::header(header);
-        serializeAndWrite(headerChunk);
-    }
-
-    void EncryptingWriter::writeFile(const std::filesystem::path rootPath, const std::filesystem::path& filePath, const std::size_t& bufferSize) {
-        std::ifstream in(filePath, std::ios::binary);
-        if (!in) {
-            throw std::runtime_error("Error occurs while opening file");
-        }
-
+    void EncryptingWriter::writeFilePath(const std::filesystem::path& filePath, const std::filesystem::path& rootPath) {
         std::filesystem::path relativeFilePath = std::filesystem::relative(filePath, rootPath);
         Chunk filePathChunk = Chunk::filePath(relativeFilePath);
-        serializeAndWrite(filePathChunk);
+        queueToEncrypt.push(filePathChunk, index);
+        index++;
+    }
 
+    void EncryptingWriter::writeFileContent(std::ifstream& in, const std::size_t& bufferSize) {
         while (in.peek() != EOF) {
             std::vector<unsigned char> plain(bufferSize);
 
@@ -34,22 +30,101 @@ namespace fe {
 
             plain.resize(readLen);
             Chunk contentBlock = Chunk::fileBlock(plain);
-            serializeAndWrite(contentBlock);
+            queueToEncrypt.push(contentBlock, index);
+            index++;
+        }
+    }
+
+    void EncryptingWriter::writeFileEnd() {
+        Chunk fileEnd = Chunk::FE_END_OF_FILE;
+        queueToEncrypt.push(fileEnd, index);
+        index++;
+    }
+
+    void EncryptingWriter::writeFile(const std::filesystem::path rootPath, const std::filesystem::path& filePath, const std::size_t& bufferSize) {
+        std::ifstream in(filePath, std::ios::binary);
+        if (!in) {
+            throw std::runtime_error("Error occurs while opening file");
         }
 
-        Chunk fileEnd = Chunk::FE_END_OF_FILE;
-        serializeAndWrite(fileEnd);
+        writeFilePath(filePath, rootPath);
+        writeFileContent(in, bufferSize);
+        writeFileEnd();
 
         in.close();
     }
 
     void EncryptingWriter::addEndTag() {
         Chunk streamEnd = Chunk::FE_END_OF_STREAM;
-        serializeAndWrite(streamEnd);
+        queueToEncrypt.push(streamEnd, index);
+        index++;
     }
 
-    void EncryptingWriter::serializeAndWrite(Chunk& chunk) {
-        SerializedChunk serializedChunk = chunkSerializer.serialize(chunk);
+    void EncryptingWriter::synchronizedWrite(SerializedChunk& serializedChunk) {
+        std::lock_guard<std::mutex> lock(_mutex);
         outStream.write(reinterpret_cast<const char*>(serializedChunk.data()), serializedChunk.size());
+    }
+
+    void EncryptingWriter::startSerializerThreads() {
+        for (std::size_t i = 0; i < threadCount; ++i) {
+            serializerThreads.emplace_back([this]() {
+                {
+                    std::lock_guard<std::mutex> lock(workerMutex);
+                    activeSerialaizers++;
+                }
+
+                Chunk chunk;
+                while (auto index = queueToEncrypt.pop(chunk)) {
+                    SerializedChunk serialized = chunkSerializer.serialize(chunk);
+                    queueToWrite.push(std::move(serialized), index.value());
+                }
+
+                {
+                    std::lock_guard<std::mutex> lock(workerMutex);
+                    activeSerialaizers--;
+                    workersFinished.notify_one();
+                }
+            });
+        }
+    }
+
+    void EncryptingWriter::startWriterThread() {
+        writerThread = std::thread([this]() {
+            {
+                std::lock_guard<std::mutex> lock(workerMutex);
+                activeWriters++;
+            }
+
+            SerializedChunk serialized;
+            while (queueToWrite.pop(serialized)) {
+                synchronizedWrite(serialized);
+            }
+
+            {
+                std::lock_guard<std::mutex> lock(workerMutex);
+                activeWriters--;
+                workersFinished.notify_one();
+            }
+        });
+    }
+    
+    void EncryptingWriter::close() {
+        queueToEncrypt.close();
+        {
+            std::unique_lock<std::mutex> lock(workerMutex);
+            workersFinished.wait(lock, [&]() {
+                return activeSerialaizers.load() == 0;
+            });
+        }
+        for (auto& t : serializerThreads) t.join();
+
+        queueToWrite.close();
+        {
+            std::unique_lock<std::mutex> lock(workerMutex);
+            workersFinished.wait(lock, [&]() {
+                return activeWriters.load() == 0;
+            });
+        }
+        writerThread.join();
     }
 }

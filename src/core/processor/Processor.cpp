@@ -13,14 +13,16 @@ namespace fe {
         const std::filesystem::path rootPath,
         const std::vector<std::filesystem::path>& filesPaths,
         std::array<char, 256>& password,
-        const std::size_t& bufferSize
+        const std::size_t& bufferSize,
+        const std::size_t& threadCount
     ) {
         EncryptionController::encrypt(
             outputFilename,
             rootPath,
             filesPaths,
             password,
-            bufferSize
+            bufferSize,
+            threadCount
         );
 
         for (auto path: filesPaths) {

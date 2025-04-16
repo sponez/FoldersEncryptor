@@ -1,5 +1,7 @@
 #include "DecryptionController.h"
 
+#include <cstring>
+
 namespace fe {
     void DecryptionController::decrypt(
         const std::filesystem::path outputPath,
@@ -33,18 +35,15 @@ namespace fe {
     }
 
     void DecryptionController::initReaderContext(Chunk &saltChunk, std::array<char, 256>& password, DecryptingReader &reader) {
-        Chunk headerChunk = reader.readNextChunk();
-        if (headerChunk.tag() != Chunk::Tag::FE_HEADER) {
-            throw std::runtime_error("Data integrity has been compromised");
-        }
-
         auto key = ControllerUtils::getKeyAndDestroyPassword(password, saltChunk.data());
+        auto saltCopy = std::shared_ptr<unsigned char[]>(
+            new unsigned char[Chunk::SALT_SIZE],
+            std::default_delete<unsigned char[]>()
+        );
+        std::memcpy(saltCopy.get(), saltChunk.data(), Chunk::SALT_SIZE);
+        auto salt = std::static_pointer_cast<const unsigned char[]>(saltCopy);
 
-        auto context = std::make_unique<SecretStreamContext>();
-        if (crypto_secretstream_xchacha20poly1305_init_pull(context.get(), headerChunk.data(), key.get()) != 0) {
-            throw std::runtime_error("Data integrity has been compromised");
-        }
-        reader.setContext(context.release());
+        reader.setContext(key, salt);
     }
 
     void DecryptionController::recreateFile(Chunk& pathChunk, const std::filesystem::path& outputPath, DecryptingReader &reader) {

@@ -2,11 +2,7 @@
 
 namespace fe {
     Chunk Chunk::salt(const unsigned char* salt) {
-        return Chunk(Tag::FE_SALT, SALT_LENGTH, salt);
-    }
-
-    Chunk Chunk::header(const unsigned char* header) {
-        return Chunk(Tag::FE_HEADER, HEADER_LENGTH, header);
+        return Chunk(Tag::FE_SALT, SALT_SIZE, salt);
     }
 
     Chunk Chunk::filePath(std::filesystem::path path) {

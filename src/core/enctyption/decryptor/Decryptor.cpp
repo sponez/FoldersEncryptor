@@ -7,14 +7,16 @@ namespace fe {
         auto decipher = std::make_unique<unsigned char[]>(size);
         unsigned long long decryptedLen;
         unsigned char tag = 0;
+        auto nonce = EncryptionUtils::getNonce(salt, index.load());
 
         if (
-            crypto_secretstream_xchacha20poly1305_pull(
-                context,
+            crypto_aead_xchacha20poly1305_ietf_decrypt(
                 decipher.get(), &decryptedLen,
-                &tag,
+                nullptr,
                 data, size,
-                nullptr, 0
+                nullptr, 0,
+                nonce.get(),
+                key.get()
             ) != 0
         ) {
             throw std::runtime_error("Failed to decrypt data");

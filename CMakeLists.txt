@@ -33,6 +33,7 @@ set(APP_SOURCES
 
     src/core/enctyption/encryptor/Encryptor.tpp
     src/core/enctyption/decryptor/Decryptor.cpp
+    src/core/enctyption/utils/EncryptionUtils.cpp
     src/core/controller/encryptor/EncryptionController.cpp
     src/core/controller/decryptor/DecryptionController.cpp
     src/core/controller/utils/ControllerUtils.cpp
@@ -44,6 +45,8 @@ set(APP_SOURCES
     src/core/io/reader/DecryptingReader.cpp
     src/core/processor/Processor.cpp
     src/core/processor/explorer/ExplorerTool.cpp
+
+    src/core/multithreading/BlockingStrictIndexedQueue.hpp
 
     src/utils/files/FilesUtils.cpp
 )

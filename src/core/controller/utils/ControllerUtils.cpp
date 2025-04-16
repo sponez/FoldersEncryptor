@@ -1,11 +1,14 @@
 #include "ControllerUtils.h"
 
 namespace fe {
-    std::unique_ptr<const unsigned char[]> ControllerUtils::getKeyAndDestroyPassword(
+    std::shared_ptr<const unsigned char[]> ControllerUtils::getKeyAndDestroyPassword(
         std::array<char, 256>& password,
         const unsigned char* salt
     ) {
-        std::unique_ptr<unsigned char[]> key = std::make_unique<unsigned char[]>(KEY_LENGTH);
+        auto key = std::shared_ptr<unsigned char[]>(
+            new unsigned char[KEY_LENGTH],
+            std::default_delete<unsigned char[]>()
+        );
 
         if (
             crypto_pwhash(
@@ -20,8 +23,8 @@ namespace fe {
             throw std::runtime_error("Failed to init key");
         }
     
-        std::fill(const_cast<char*>(password.data()), const_cast<char*>(password.data()) + password.size(), '\0');
+        sodium_memzero(password.data(), password.size());
 
-        return key;
+        return std::static_pointer_cast<const unsigned char[]>(key);
     }
 }

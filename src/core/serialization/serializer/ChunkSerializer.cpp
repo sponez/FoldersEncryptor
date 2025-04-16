@@ -12,8 +12,7 @@ namespace fe {
         buffer.insert(buffer.end(), &tagByte, &tagByte + Chunk::TAG_SIZE);
 
         switch (chunk.tag()) {
-            case Chunk::Tag::FE_SALT:
-            case Chunk::Tag::FE_HEADER: {
+            case Chunk::Tag::FE_SALT: {
                 buffer.insert(buffer.end(), chunk.data(), chunk.data() + chunk.size());
                 break;
             }

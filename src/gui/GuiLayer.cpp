@@ -153,12 +153,14 @@ void GuiLayer::encryptDataWindow() {
         }
 
         std::size_t bufferSize = 4096;
+        std::size_t threadCount = 6;
         fe::Processor::processEncryptOption(
             outputNameString,
             rootPath,
             selectedPaths,
             password,
-            bufferSize
+            bufferSize,
+            threadCount
         );
         
         if(isFolder) {

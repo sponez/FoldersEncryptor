@@ -11,17 +11,20 @@
 namespace fe {
     class DecryptingReader {
         public:
-            DecryptingReader(std::istream& stream): inStream(stream), chunkDeserializer() {};
+            DecryptingReader(std::istream& stream): inStream(stream) {};
             ~DecryptingReader() = default;
 
-            void setContext(SecretStreamContext* context) {
-                chunkDeserializer = ChunkDeserializer(Decryptor(context));
+            void setContext(
+                std::shared_ptr<const unsigned char[]> key,
+                std::shared_ptr<const unsigned char[]> salt
+            ) {
+                chunkDeserializer = std::make_unique<ChunkDeserializer>(Decryptor(key, salt));
             }
 
             Chunk readNextChunk();
             
         private:
             std::istream& inStream;
-            ChunkDeserializer chunkDeserializer;
+            std::unique_ptr<ChunkDeserializer> chunkDeserializer;
     };
 }

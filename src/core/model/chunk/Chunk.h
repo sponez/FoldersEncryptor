@@ -15,8 +15,7 @@ namespace fe {
         public:
             enum class Tag: uint8_t;
 
-            inline static const uint8_t SALT_LENGTH = crypto_pwhash_SALTBYTES;            
-            inline static const uint8_t HEADER_LENGTH = crypto_secretstream_xchacha20poly1305_HEADERBYTES;
+            inline static const uint8_t SALT_SIZE = crypto_pwhash_SALTBYTES;
             inline static const uint8_t TAG_SIZE = sizeof(uint8_t);
             inline static const uint8_t SIZE_SIZE = sizeof(std::size_t);
 
@@ -27,6 +26,8 @@ namespace fe {
             static const Chunk FE_END_OF_FILE;
             static const Chunk FE_END_OF_STREAM;
             static const Chunk FE_NULL_CHUNK;
+
+            Chunk() {}
 
             Chunk(Tag tag, std::size_t size, const unsigned char* data)
                 : _tag(tag), _size(size), _content(std::make_unique<unsigned char[]>(size)) {
@@ -71,7 +72,6 @@ namespace fe {
 
     enum class Chunk::Tag : uint8_t {
         FE_SALT,
-        FE_HEADER,
         FE_FILE_BEGIN,
         FE_FILE_CONTENT_BLOCK,
         FE_END_OF_FILE,

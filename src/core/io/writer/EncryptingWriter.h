@@ -2,28 +2,59 @@
 
 #include <filesystem>
 #include <fstream>
+#include <thread>
+#include <vector>
 
 #include "../../model/chunk/Chunk.h"
 #include "../../serialization/serializer/ChunkSerializer.h"
 #include "../../enctyption/encryptor/Encryptor.h"
+#include "../../multithreading/BlockingStrictIndexedQueue.hpp"
 
 namespace fe {
     class EncryptingWriter {
     public:
-        EncryptingWriter(std::ostream& stream, SecretStreamContext* context): outStream(stream) {
-            chunkSerializer = ChunkSerializer(Encryptor(context));
+        EncryptingWriter(
+            std::ostream& stream,
+            std::shared_ptr<const unsigned char[]> key,
+            std::shared_ptr<const unsigned char[]> salt,
+            const std::size_t& threadCount
+        ): outStream(stream), chunkSerializer(Encryptor(key, salt)) {
+            this->threadCount = threadCount;
+            startSerializerThreads();
+            startWriterThread();
         }
+
         ~EncryptingWriter() = default;
 
         void writeSalt(const unsigned char* salt);
-        void writeHeader(const unsigned char* header);
         void writeFile(const std::filesystem::path rootPath, const std::filesystem::path& filePath, const std::size_t& bufferSize);
         void addEndTag();
+        void close();
 
     private:
         std::ostream& outStream;
         ChunkSerializer chunkSerializer;
 
-        void serializeAndWrite(Chunk& chunk);
+        std::size_t index = 0;
+        BlockingStrictIndexedQueue<Chunk> queueToEncrypt;
+        BlockingStrictIndexedQueue<SerializedChunk> queueToWrite;
+    
+        std::vector<std::thread> serializerThreads;
+        std::thread writerThread;
+        std::size_t threadCount;
+        mutable std::mutex _mutex;
+
+        std::mutex workerMutex;
+        std::atomic<std::size_t> activeSerialaizers{0};
+        std::atomic<std::size_t> activeWriters{0};
+        std::condition_variable workersFinished;
+
+        void writeFilePath(const std::filesystem::path& filePath, const std::filesystem::path& rootPath);
+        void writeFileContent(std::ifstream& in, const std::size_t& bufferSize);
+        void writeFileEnd();
+        void synchronizedWrite(SerializedChunk& serializedChunk);
+
+        void startSerializerThreads();
+        void startWriterThread();
     };
 }

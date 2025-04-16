@@ -12,6 +12,8 @@ namespace fe {
 
         SerializedChunk serialize(Chunk& chunk);
 
+        
+
     private:
         Encryptor encryptor;
     };

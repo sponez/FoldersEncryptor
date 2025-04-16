@@ -9,6 +9,7 @@
 namespace fe {
     class SerializedChunk {
     public:
+        SerializedChunk() {}
         SerializedChunk(std::vector<unsigned char>&& buffer)
             : _size(buffer.size()), _data(std::make_unique<unsigned char[]>(buffer.size())) {
             std::copy(buffer.begin(), buffer.end(), _data.get());
