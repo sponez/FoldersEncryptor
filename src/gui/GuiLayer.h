@@ -6,6 +6,8 @@
 #include <vector>
 #include <filesystem>
 #include <imgui.h>
+#include <thread>
+#include <atomic>
 
 class GuiLayer {
 public:
@@ -13,14 +15,21 @@ public:
 
 private:
     void mainWindow();
+    
     void encryptButton();
     void dectyptButton();
     void openButton();
+    void preferencesButton();
+
     bool chooseTypePopup();
 
     void encryptDataWindow();
     void decryptDataWindow();
     void temporaryDecryptDataWindow();
+    void preferencesWindow();
+
+    void findTotalBytes();
+    void progressBar();
 
 private:
     ImVec2 displaySize;
@@ -32,4 +41,11 @@ private:
     std::array<char, 256> outputName = {};
     std::array<char, 256> password = {};
     bool isFolder = false;
+
+    int threadCount = 1;
+    int bufferSizePercent = 10;
+
+    std::atomic<size_t> bytesProcessed = 0;
+    std::size_t totalBytes = 0;
+    bool inProgress = false;
 };

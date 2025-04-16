@@ -39,6 +39,7 @@ void GuiLayer::mainWindow() {
         encryptButton();
         dectyptButton();
         openButton();
+        preferencesButton();
         break;
     
     case ENCRYPT_DATA:
@@ -51,6 +52,14 @@ void GuiLayer::mainWindow() {
 
     case TEMPORARY_DECRYPT_DATA:
         temporaryDecryptDataWindow();
+        break;
+
+    case PREFERENSES:
+        preferencesWindow();
+        break;
+
+    case PROGRESS_BAR:
+        progressBar();
         break;
 
     default:
@@ -94,6 +103,12 @@ void GuiLayer::openButton() {
             selectedPaths.push_back(*file);
             currentWindow = Window::TEMPORARY_DECRYPT_DATA;
         }
+    }
+}
+
+void GuiLayer::preferencesButton() {
+    if (ImGui::Button(PREFERENSES_BUTTON, ImVec2(buttonWidth, buttonHeight))) {
+        currentWindow = Window::PREFERENSES;
     }
 }
 
@@ -153,31 +168,31 @@ void GuiLayer::encryptDataWindow() {
             selectedPaths = FilesUtils::unpack(selectedPaths[0]);
         }
 
-        std::size_t bufferSize = 4096;
-        std::size_t threadCount;
-        if (std::thread::hardware_concurrency() <= 2) {
-            threadCount = 1;
-        } else {
-            threadCount = std::thread::hardware_concurrency() - 2;
-        }
+        findTotalBytes();
+        inProgress = true;
+        std::size_t bufferSize = (FilesUtils::getAvailableRAMBytes() / 10 * bufferSizePercent / 100) / threadCount;
+        std::thread worker(
+            [outputNameString, rootPath, bufferSize, folderToDelete, this]() {
+                fe::Processor::processEncryptOption(
+                    outputNameString,
+                    rootPath,
+                    selectedPaths,
+                    password,
+                    bufferSize,
+                    threadCount,
+                    &bytesProcessed
+                );
 
-        fe::Processor::processEncryptOption(
-            outputNameString,
-            rootPath,
-            selectedPaths,
-            password,
-            bufferSize,
-            threadCount
+                if(isFolder) {
+                    std::filesystem::remove_all(folderToDelete);
+                }
+                std::fill(outputName.data(), outputName.data() + outputName.size(), '\0');
+
+                inProgress = false;
+            }
         );
-        
-        if(isFolder) {
-            std::filesystem::remove_all(folderToDelete);
-        }
-
-        std::fill(outputName.data(), outputName.data() + outputName.size(), '\0');
-        currentWindow = Window::MAIN;
-        selectedPaths.clear();
-        isFolder = false;
+        worker.detach();
+        currentWindow = Window::PROGRESS_BAR;
     }
 }
 
@@ -187,22 +202,23 @@ void GuiLayer::decryptDataWindow() {
     }
 
     if (ImGui::Button(OK, ImVec2(buttonWidth, buttonHeight))) {
-        std::size_t threadCount;
-        if (std::thread::hardware_concurrency() <= 2) {
-            threadCount = 1;
-        } else {
-            threadCount = std::thread::hardware_concurrency() - 2;
-        }
+        findTotalBytes();
+        inProgress = true;
+        std::thread worker(
+            [&]() {
+                fe::Processor::processDecryptOption(
+                    selectedPaths[0].parent_path(),
+                    selectedPaths[0],
+                    password,
+                    threadCount,
+                    &bytesProcessed
+                );
 
-        fe::Processor::processDecryptOption(
-            selectedPaths[0].parent_path(),
-            selectedPaths[0],
-            password,
-            threadCount
+                inProgress = false;
+            }
         );
-
-        currentWindow = Window::MAIN;
-        selectedPaths.clear();
+        worker.detach();
+        currentWindow = Window::PROGRESS_BAR;
     }
 }
 
@@ -212,20 +228,52 @@ void GuiLayer::temporaryDecryptDataWindow() {
     }
 
     if (ImGui::Button(OK, ImVec2(buttonWidth, buttonHeight))) {
-        std::size_t threadCount;
-        if (std::thread::hardware_concurrency() <= 2) {
-            threadCount = 1;
-        } else {
-            threadCount = std::thread::hardware_concurrency() - 2;
-        }
+        findTotalBytes();
+        inProgress = true;
+        std::thread worker(
+            [&]() {
+                fe::Processor::processTemporaryDecryptOption(
+                    selectedPaths[0],
+                    password,
+                    threadCount,
+                    &bytesProcessed
+                );
 
-        fe::Processor::processTemporaryDecryptOption(
-            selectedPaths[0],
-            password,
-            threadCount
+                inProgress = false;
+            }
         );
+        worker.detach();
 
+        currentWindow = Window::PROGRESS_BAR;
+    }
+}
+
+void GuiLayer::preferencesWindow() {
+    ImGui::SliderInt("Threads", &threadCount, 1, std::thread::hardware_concurrency());
+    ImGui::SliderInt("BufferSize (%)", &bufferSizePercent, 1, 100);
+
+    if (ImGui::Button(OK, ImVec2(buttonWidth, buttonHeight))) {
         currentWindow = Window::MAIN;
+    }
+}
+
+void GuiLayer::findTotalBytes() {
+    for (auto path: selectedPaths) {
+        totalBytes += std::filesystem::file_size(path);
+    }
+}
+
+void GuiLayer::progressBar() {
+    if (inProgress) {
+        float progress = static_cast<float>(bytesProcessed.load()) / totalBytes;
+        progress = std::min(progress, 1.0f);
+        ImGui::ProgressBar(progress, ImVec2(-1, 0));
+        ImGui::Text("%.1f%%", progress * 100.0f);
+    } else {
+        currentWindow = Window::MAIN;
+        bytesProcessed = 0;
+        totalBytes = 0;
         selectedPaths.clear();
+        isFolder = false;
     }
 }

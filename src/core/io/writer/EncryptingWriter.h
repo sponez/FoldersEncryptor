@@ -17,8 +17,9 @@ namespace fe {
             std::ostream& stream,
             std::shared_ptr<const unsigned char[]> key,
             std::shared_ptr<const unsigned char[]> salt,
-            const std::size_t& threadCount
-        ): outStream(stream), chunkSerializer(Encryptor(key, salt)) {
+            const std::size_t& threadCount,
+            std::atomic<std::size_t>* bytesProcessed
+        ): outStream(stream), chunkSerializer(Encryptor(key, salt)), bytesProcessed(bytesProcessed) {
             this->threadCount = threadCount;
             startSerializerThreads();
             startWriterThread();
@@ -27,11 +28,17 @@ namespace fe {
         ~EncryptingWriter() = default;
 
         void writeSalt(const unsigned char* salt);
-        void writeFile(const std::filesystem::path rootPath, const std::filesystem::path& filePath, const std::size_t& bufferSize);
+        void writeFile(
+            const std::filesystem::path rootPath,
+            const std::filesystem::path& filePath,
+            const std::size_t& bufferSize
+        );
         void addEndTag();
         void close();
 
     private:
+        std::atomic<std::size_t>* bytesProcessed;
+
         std::ostream& outStream;
         ChunkSerializer chunkSerializer;
 

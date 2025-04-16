@@ -4,10 +4,11 @@
 
 namespace fe {
     void DecryptionController::decrypt(
-        const std::filesystem::path outputPath,
-        const std::filesystem::path& decryptedFilePath,
+        std::filesystem::path outputPath,
+        std::filesystem::path decryptedFilePath,
         std::array<char, 256>& password,
-        const std::size_t& threadCount
+        const std::size_t& threadCount,
+        std::atomic<std::size_t>* bytesProcessed
     ) {
         std::ifstream in(decryptedFilePath, std::ios::binary);
         if (!in) {
@@ -21,7 +22,7 @@ namespace fe {
 
         Chunk currentChunk = reader.readNextFileChunk();
         while (currentChunk.tag() != Chunk::Tag::FE_END_OF_STREAM) {
-            recreateFile(currentChunk, outputPath, reader);
+            recreateFile(currentChunk, outputPath, reader, bytesProcessed);
             currentChunk = reader.readNextFileChunk();
         }
 
@@ -41,7 +42,12 @@ namespace fe {
         reader.setContext(key, salt);
     }
 
-    void DecryptionController::recreateFile(Chunk& pathChunk, const std::filesystem::path& outputPath, DecryptingReader &reader) {
+    void DecryptionController::recreateFile(
+        Chunk& pathChunk,
+        const std::filesystem::path& outputPath,
+        DecryptingReader &reader,
+        std::atomic<std::size_t>* bytesProcessed
+    ) {
         std::string pathStr(reinterpret_cast<const char*>(pathChunk.data()), pathChunk.size());
         std::filesystem::path outputFilePath = outputPath / std::filesystem::u8path(pathStr);
         
@@ -55,6 +61,7 @@ namespace fe {
             }
 
             out.write(reinterpret_cast<const char*>(currentChunk.data()), static_cast<std::streamsize>(currentChunk.size()));
+            bytesProcessed->fetch_add(currentChunk.size());
             currentChunk = reader.readNextFileChunk();
         }
 

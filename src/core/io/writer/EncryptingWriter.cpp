@@ -41,7 +41,11 @@ namespace fe {
         index++;
     }
 
-    void EncryptingWriter::writeFile(const std::filesystem::path rootPath, const std::filesystem::path& filePath, const std::size_t& bufferSize) {
+    void EncryptingWriter::writeFile(
+        const std::filesystem::path rootPath,
+        const std::filesystem::path& filePath,
+        const std::size_t& bufferSize
+    ) {
         std::ifstream in(filePath, std::ios::binary);
         if (!in) {
             throw std::runtime_error("Error occurs while opening file");
@@ -98,6 +102,7 @@ namespace fe {
             SerializedChunk serialized;
             while (queueToWrite.pop(serialized)) {
                 synchronizedWrite(serialized);
+                bytesProcessed->fetch_add(serialized.size());
             }
 
             {

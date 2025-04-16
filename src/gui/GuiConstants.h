@@ -12,6 +12,8 @@ inline constexpr const char* FILES = "File(s)";
 inline constexpr const char* OPEN_BUTTON = "Temporarily Open";
 inline constexpr const char* SELECTED = "Selected folder:";
 
+inline constexpr const char* PREFERENSES_BUTTON = "Preferences";
+
 inline constexpr const char* OUTPUT_FILE_NAME = "Output file name";
 inline constexpr const char* PASSWORD = "Password";
 inline constexpr const char* OK = "Ok";

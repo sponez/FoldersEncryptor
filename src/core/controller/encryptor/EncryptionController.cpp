@@ -2,12 +2,13 @@
 
 namespace fe {
     void EncryptionController::encrypt(
-        const std::string& outputFilename,
-        const std::filesystem::path rootPath,
+        std::string outputFilename,
+        std::filesystem::path rootPath,
         const std::vector<std::filesystem::path>& filesPaths,
         std::array<char, 256>& password,
         const std::size_t& bufferSize,
-        const std::size_t& threadCount
+        const std::size_t& threadCount,
+        std::atomic<std::size_t>* bytesProcessed
     ) {
         auto outputPath = rootPath / outputFilename;
         std::ofstream out(outputPath, std::ios::binary);
@@ -18,7 +19,7 @@ namespace fe {
         auto salt = generateSalt();
         auto key = ControllerUtils::getKeyAndDestroyPassword(password, salt.get());
 
-        EncryptingWriter writer(out, key, salt, threadCount);
+        EncryptingWriter writer(out, key, salt, threadCount, bytesProcessed);
         writer.writeSalt(salt.get());
         for (auto filePath: filesPaths) {
             writer.writeFile(rootPath, filePath, bufferSize);

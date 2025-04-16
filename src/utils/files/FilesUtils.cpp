@@ -11,3 +11,14 @@ std::vector<std::filesystem::path> FilesUtils::unpack(std::filesystem::path& fol
 
     return unpacked;
 }
+
+std::size_t FilesUtils::getAvailableRAMBytes() {
+    MEMORYSTATUSEX status;
+    status.dwLength = sizeof(status);
+
+    if (GlobalMemoryStatusEx(&status)) {
+        return static_cast<std::size_t>(status.ullAvailPhys);
+    }
+
+    throw std::runtime_error("Failed to retrieve system memory info.");
+}
