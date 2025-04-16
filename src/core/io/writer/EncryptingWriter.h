@@ -42,7 +42,7 @@ namespace fe {
         std::vector<std::thread> serializerThreads;
         std::thread writerThread;
         std::size_t threadCount;
-        mutable std::mutex _mutex;
+        std::mutex _mutex;
 
         std::mutex workerMutex;
         std::atomic<std::size_t> activeSerialaizers{0};

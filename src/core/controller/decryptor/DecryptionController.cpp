@@ -6,31 +6,26 @@ namespace fe {
     void DecryptionController::decrypt(
         const std::filesystem::path outputPath,
         const std::filesystem::path& decryptedFilePath,
-        std::array<char, 256>& password
+        std::array<char, 256>& password,
+        const std::size_t& threadCount
     ) {
         std::ifstream in(decryptedFilePath, std::ios::binary);
         if (!in) {
             throw std::runtime_error("Failed to open decryped file");
         }
 
-        DecryptingReader reader(in);
-        Chunk currentChunk = reader.readNextChunk();
-        while (currentChunk.tag() != Chunk::Tag::FE_END_OF_STREAM) {
-            switch (currentChunk.tag())
-            {
-            case Chunk::Tag::FE_SALT:
-                initReaderContext(currentChunk, password, reader);
-                break;
-            case Chunk::Tag::FE_FILE_BEGIN:
-                recreateFile(currentChunk, outputPath, reader);
-                break;
-            default:
-                break;
-            }
+        DecryptingReader reader(in, threadCount);
 
-            currentChunk = reader.readNextChunk();
+        Chunk saltChank = reader.readSalt();
+        initReaderContext(saltChank, password, reader);
+
+        Chunk currentChunk = reader.readNextFileChunk();
+        while (currentChunk.tag() != Chunk::Tag::FE_END_OF_STREAM) {
+            recreateFile(currentChunk, outputPath, reader);
+            currentChunk = reader.readNextFileChunk();
         }
 
+        reader.close();
         in.close();
     }
 
@@ -53,14 +48,14 @@ namespace fe {
         std::filesystem::create_directories(outputFilePath.parent_path());
         std::ofstream out(outputFilePath, std::ios::binary);
 
-        Chunk currentChunk = reader.readNextChunk();
+        Chunk currentChunk = reader.readNextFileChunk();
         while (currentChunk.tag() != Chunk::Tag::FE_END_OF_FILE) {
             if (currentChunk.tag() != Chunk::Tag::FE_FILE_CONTENT_BLOCK) {
                 throw std::runtime_error("Data integrity has been compromised");
             }
 
             out.write(reinterpret_cast<const char*>(currentChunk.data()), static_cast<std::streamsize>(currentChunk.size()));
-            currentChunk = reader.readNextChunk();
+            currentChunk = reader.readNextFileChunk();
         }
 
         out.close();

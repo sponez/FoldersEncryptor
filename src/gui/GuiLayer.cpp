@@ -5,6 +5,7 @@
 #include "../utils/files/FilesUtils.h"
 #include <iostream>
 #include <optional>
+#include <thread>
 #include <stdlib.h>
 
 void GuiLayer::imGuiWindow() {
@@ -153,7 +154,13 @@ void GuiLayer::encryptDataWindow() {
         }
 
         std::size_t bufferSize = 4096;
-        std::size_t threadCount = 6;
+        std::size_t threadCount;
+        if (std::thread::hardware_concurrency() <= 2) {
+            threadCount = 1;
+        } else {
+            threadCount = std::thread::hardware_concurrency() - 2;
+        }
+
         fe::Processor::processEncryptOption(
             outputNameString,
             rootPath,
@@ -180,10 +187,18 @@ void GuiLayer::decryptDataWindow() {
     }
 
     if (ImGui::Button(OK, ImVec2(buttonWidth, buttonHeight))) {
+        std::size_t threadCount;
+        if (std::thread::hardware_concurrency() <= 2) {
+            threadCount = 1;
+        } else {
+            threadCount = std::thread::hardware_concurrency() - 2;
+        }
+
         fe::Processor::processDecryptOption(
             selectedPaths[0].parent_path(),
             selectedPaths[0],
-            password
+            password,
+            threadCount
         );
 
         currentWindow = Window::MAIN;
@@ -197,9 +212,17 @@ void GuiLayer::temporaryDecryptDataWindow() {
     }
 
     if (ImGui::Button(OK, ImVec2(buttonWidth, buttonHeight))) {
+        std::size_t threadCount;
+        if (std::thread::hardware_concurrency() <= 2) {
+            threadCount = 1;
+        } else {
+            threadCount = std::thread::hardware_concurrency() - 2;
+        }
+
         fe::Processor::processTemporaryDecryptOption(
             selectedPaths[0],
-            password
+            password,
+            threadCount
         );
 
         currentWindow = Window::MAIN;

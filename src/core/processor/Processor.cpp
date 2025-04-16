@@ -33,12 +33,14 @@ namespace fe {
     void Processor::processDecryptOption(
         const std::filesystem::path outputPath,
         const std::filesystem::path& decryptedFilePath,
-        std::array<char, 256>& password
+        std::array<char, 256>& password,
+        const std::size_t& threadCount
     ) {
         DecryptionController::decrypt(
             outputPath,
             decryptedFilePath,
-            password
+            password,
+            threadCount
         );
 
         std::filesystem::remove_all(decryptedFilePath);
@@ -46,13 +48,15 @@ namespace fe {
 
     void Processor::processTemporaryDecryptOption(
         const std::filesystem::path& decryptedFilePath,
-        std::array<char, 256>& password
+        std::array<char, 256>& password,
+        const std::size_t& threadCount
     ) {
         std::filesystem::path tempDir = createTemporaryDirectory();
         DecryptionController::decrypt(
             tempDir,
             decryptedFilePath,
-            password
+            password,
+            threadCount
         );
 
         ExplorerTool::openPathInExplorer(tempDir);

@@ -13,7 +13,8 @@ namespace fe {
             static void decrypt(
                 std::filesystem::path outputPath,
                 const std::filesystem::path& decryptedFilePath,
-                std::array<char, 256>& password
+                std::array<char, 256>& password,
+                const std::size_t& threadCount
             );
         
         private:
