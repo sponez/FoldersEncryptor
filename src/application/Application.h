@@ -1,6 +1,13 @@
 #pragma once
 
+#include <string>
+#include <variant>
+
 #include <SDL.h>
+
+namespace fe {
+    using Property = std::variant<int, bool, std::string>;
+}
 
 class Application {
 public:
@@ -10,14 +17,9 @@ public:
     void run();
 
 private:
-    bool initWindow();
-    bool initGlContext();
-    void enableVSync();
-    bool initSDL();
     bool initImGui();
     bool init();
 
-    void destroySDL();
     void destroyImGui();
 
     void processEvents();
