@@ -13,11 +13,30 @@ namespace fe {
 
     void SdlController::destroy() {
         saveProperties();
-        
         ImguiController::destroy();
+        
         SDL_GL_DeleteContext(glContext);
         SDL_DestroyWindow(window);
         SDL_Quit();
+    }
+
+    void SdlController::render() {    
+        ImGui::Render();
+        glViewport(
+            SdlController::SdlProperties::VIEWPORT_X,
+            SdlController::SdlProperties::VIEWPORT_Y,
+            properties.getPropertyValue<int>(SdlController::SdlProperties::WINDOW_WIDTH_KEY),
+            properties.getPropertyValue<int>(SdlController::SdlProperties::WINDOW_HEIGHT_KEY)
+        );
+        glClearColor(
+            SdlController::SdlProperties::CLEAR_COLOR_R,
+            SdlController::SdlProperties::CLEAR_COLOR_G,
+            SdlController::SdlProperties::CLEAR_COLOR_B,
+            SdlController::SdlProperties::CLEAR_COLOR_A
+        );
+        glClear(GL_COLOR_BUFFER_BIT);
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        SDL_GL_SwapWindow(window);
     }
 
     void SdlController::saveProperties() {

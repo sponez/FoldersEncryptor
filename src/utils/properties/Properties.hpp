@@ -2,10 +2,11 @@
 
 #include <map>
 #include <string>
-
-#include "../../application/Application.h"
+#include <variant>
 
 namespace fe {
+    using Property = std::variant<int, bool, std::string>;
+
     template <typename T>
     concept SupportedJsonType =
         std::same_as<T, int> ||

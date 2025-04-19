@@ -29,11 +29,17 @@ set(IMGUI_SOURCES
 # App
 set(APP_SOURCES
     src/main.cpp
-    src/application/Application.cpp
+    src/application/Application.hpp
 
     src/gui/GuiLayer.cpp
-    src/gui/sdl/SdlController.cpp
+    src/gui/GuiGlobalController.hpp
     src/gui/imgui/ImguiController.cpp
+    src/gui/sdl/SdlController.cpp
+    
+    src/gui/window/abstract/GuiWindow.hpp
+    src/gui/window/abstract/GuiWindowController.hpp
+    src/gui/window/main/MainGuiWindow.hpp
+    src/gui/window/main/MainGuiWindowController.hpp
     
     src/selector/Selector.cpp
 
