@@ -4,8 +4,10 @@
 #include <string>
 #include <variant>
 
+#include "../string/StringUtils.hpp"
+
 namespace fe {
-    using Property = std::variant<int, bool, std::string>;
+    using Property = std::variant<int, float, bool, std::string>;
 
     template <typename T>
     concept SupportedJsonType =
@@ -24,14 +26,14 @@ namespace fe {
                 auto it = state.find(propertyName);
 
                 if (it == state.end()) {
-                    throw std::runtime_error("Property not found: " + propertyName);
+                    throw std::runtime_error("Property not found: " + StringUtils::string(propertyName));
                 }
 
                 if (auto* ptr = std::get_if<T>(&(it->second))) {
                     return *ptr;
                 }
 
-                throw std::runtime_error("Wrong type for property: " + propertyName);
+                throw std::runtime_error("Wrong type for property: " + StringUtils::string(propertyName));
             }
 
             template<SupportedJsonType T>

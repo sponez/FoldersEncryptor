@@ -4,9 +4,8 @@
 
 #include <imgui.h>
 
-#include "MainWindowAction.hpp"
-#include "../GuiUtils.hpp"
 #include "../abstract/GuiWindow.hpp"
+#include "MainWindowAction.hpp"
 
 namespace fe {
     class MainGuiWindow: public GuiWindow {
@@ -14,23 +13,18 @@ namespace fe {
             inline static const std::string PROFILE_BUTTON_NAME = "Profile";
             inline static const std::string EXIT_BUTTON_NAME = "Exit";
 
-            MainGuiWindow() = default;
-            ~MainGuiWindow() = default;
+            MainGuiWindow() {}
 
         public:
+            static MainGuiWindow instance;
             MainWindowAction action = MainWindowAction::NONE;
-            static MainGuiWindow& getInstance() {
-                static MainGuiWindow instance;
-                return instance;
-            }
 
-        protected:
             void draw() override {
-                if (GuiUtils::centredButton(PROFILE_BUTTON_NAME.c_str())) {
+                if (ImGui::Button(PROFILE_BUTTON_NAME.c_str())) {
                     action = MainWindowAction::PROFILE;
                 }
 
-                if (GuiUtils::centredButton(EXIT_BUTTON_NAME.c_str())) {
+                if (ImGui::Button(EXIT_BUTTON_NAME.c_str())) {
                     action = MainWindowAction::EXIT;
                 }
             }

@@ -11,12 +11,11 @@
 
 #include "Properties.hpp"
 #include "../string/StringUtils.hpp"
-#include "../../application/Application.h"
 
 namespace fe {
     class PropertiesFileBuilder {
         public:
-            PropertiesFileBuilder(const Properties* properties): properties(properties) {
+            PropertiesFileBuilder(Properties* properties): properties(properties) {
                 document.SetObject();
                 allocator = document.GetAllocator();
             }
@@ -24,12 +23,17 @@ namespace fe {
             template <SupportedJsonType T>
             PropertiesFileBuilder* save(const std::u8string& key) {
                 std::string keyStr = StringUtils::string(key);
-                T value = properties->getPropertyValue<T>(key);
-
                 rapidjson::Value nameValue(keyStr.c_str(), allocator);
-                rapidjson::Value valueValue(value);
 
-                document.AddMember(nameValue, valueValue, allocator);
+                if constexpr (std::is_same_v<T, std::string>) {
+                    std::string value = properties->getPropertyValue<std::string>(key);
+                    rapidjson::Value valueValue(value.c_str(), allocator);
+                    document.AddMember(nameValue, valueValue, allocator);
+                } else {
+                    T value = properties->getPropertyValue<T>(key);
+                    rapidjson::Value valueValue(value);
+                    document.AddMember(nameValue, valueValue, allocator);
+                }
 
                 return this;
             }
@@ -43,7 +47,7 @@ namespace fe {
             }
 
         private:
-            const Properties* properties;
+            Properties* properties;
             rapidjson::Document document;
             rapidjson::MemoryPoolAllocator<rapidjson::CrtAllocator> allocator;
     };

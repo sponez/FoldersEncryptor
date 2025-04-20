@@ -28,11 +28,10 @@ namespace fe {
                     inline static const std::u8string THEME_KEY = u8"theme";
                     inline static const ImguiTheme DEFAULT_THEME_VALUE = ImguiTheme::DARK;
             };
-        
-        private:
-            static ImguiController::ImguiProperties properties;
 
         public:
+            inline static ImguiController::ImguiProperties properties;
+
             static void init(SDL_Window* window, SDL_GLContext* glContext);
             static void destroy();
 

@@ -8,6 +8,6 @@
 namespace fe {
     class GuiWindowController {
         public:
-            virtual std::optional<GuiWindowId> process();
+            virtual std::optional<GuiWindowId> process() = 0;
     };
 }

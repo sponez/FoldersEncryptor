@@ -58,16 +58,23 @@ namespace fe {
 
     void ImguiController::setFont() {
         ImGuiIO& io = ImGui::GetIO();
-        io.Fonts->AddFontFromFileTTF(
-            properties.getPropertyValue<std::string>(ImguiController::ImguiProperties::FONT_KEY).c_str(),
-            properties.getPropertyValue<float>(ImguiController::ImguiProperties::FONT_SIZE_KEY),
-            nullptr,
-            io.Fonts->GetGlyphRangesChineseFull()
-        );
+        std::string fontPath = properties.getPropertyValue<std::string>(ImguiController::ImguiProperties::FONT_KEY);
+        float fontSize = properties.getPropertyValue<float>(ImguiController::ImguiProperties::FONT_SIZE_KEY);
+
+        if (!fontPath.empty()) {
+            io.Fonts->AddFontFromFileTTF(
+                fontPath.c_str(),
+                fontSize,
+                nullptr,
+                io.Fonts->GetGlyphRangesChineseFull()
+            );
+        } else {
+            io.Fonts->AddFontDefault();
+        }
     }
 
     void ImguiController::setTheme() {
-        ImguiTheme currentTheme =   static_cast<ImguiTheme>(properties.getPropertyValue<int>(ImguiController::ImguiProperties::THEME_KEY));
+        ImguiTheme currentTheme = static_cast<ImguiTheme>(properties.getPropertyValue<int>(ImguiController::ImguiProperties::THEME_KEY));
         switch (currentTheme) {
             case ImguiTheme::DARK:
                 ImGui::StyleColorsDark();

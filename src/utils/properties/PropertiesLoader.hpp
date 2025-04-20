@@ -36,23 +36,25 @@ namespace fe {
             template <SupportedJsonType T>
             PropertiesLoader* loadOrDefault(const std::u8string& key, const T& defaultValue) {
                 if (isOpenError) {
-                    properties->setPropertyValue(key, defaultValue);
-                    return;
+                    properties->setPropertyValue<T>(key, defaultValue);
+                    return this;
                 }
 
                 std::string keyStr = StringUtils::string(key);
                 if (!document.HasMember(keyStr.c_str())) {
-                    properties->setPropertyValue(key, defaultValue);
-                    return;
+                    properties->setPropertyValue<T>(key, defaultValue);
+                    return this;
                 }
 
                 const auto& jsonValue = document[keyStr.c_str()];
                 if constexpr (std::same_as<T, int>) {
-                    properties->setPropertyValue(key, jsonValue.GetInt());
+                    properties->setPropertyValue<int>(key, jsonValue.GetInt());
                 } else if constexpr (std::same_as<T, bool>) {
-                    properties->setPropertyValue(key, jsonValue.GetBool());
+                    properties->setPropertyValue<bool>(key, jsonValue.GetBool());
                 } else if constexpr (std::same_as<T, std::string>) {
-                    properties->setPropertyValue(key, jsonValue.GetString());
+                    properties->setPropertyValue<std::string>(key, jsonValue.GetString());
+                } else if constexpr (std::same_as<T, float>) {
+                    properties->setPropertyValue<float>(key, jsonValue.GetFloat());
                 }
 
                 return this;

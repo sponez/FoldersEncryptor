@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../gui/GuiGlobalController.hpp"
+
 namespace fe {
     class Application {
         private:
@@ -7,7 +9,7 @@ namespace fe {
         
         public:
             static void start() {
-                
+                GuiGlobalController::startGui();
             }
     };
 }

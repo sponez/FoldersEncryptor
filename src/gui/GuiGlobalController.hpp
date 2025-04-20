@@ -12,19 +12,20 @@ namespace fe {
         public:
             static void startGui() {
                 SdlController::init();
-                currentWindowController = &MainGuiWindowController::instance;
+                currentWindowController = &MainGuiWindowController::getInstance();
                 running = true;
                 run();
+                SdlController::destroy();
             }
 
         private:
             inline static bool running = false;
-            static GuiWindowController* currentWindowController;
+            inline static GuiWindowController* currentWindowController = nullptr;
 
             static void run() {
                 while (running) {
                     processSdlEvents();
-
+                    
                     ImGui_ImplOpenGL3_NewFrame();
                     ImGui_ImplSDL2_NewFrame();
                     ImGui::NewFrame();
@@ -60,7 +61,6 @@ namespace fe {
 
             static void processQuitEvent(SDL_Event& event) {
                 running = false;
-                SdlController::destroy();
             }
 
             static void processWindowEvent(SDL_Event& event) {
@@ -82,7 +82,7 @@ namespace fe {
                         break;
 
                     case GuiWindowId::MAIN:
-                        currentWindowController = &MainGuiWindowController::instance;
+                        currentWindowController = &MainGuiWindowController::getInstance();
                         break;
                 
                     default:

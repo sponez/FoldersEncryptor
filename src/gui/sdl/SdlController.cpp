@@ -4,10 +4,13 @@
 namespace fe {
     void SdlController::init() {
         loadProperties();
+
+        SDL_Init(SDL_INIT_VIDEO);
         createWindow();
         createGlContext();
         enableVSync();
         findScale();
+
         ImguiController::init(window, &glContext);
     }
 
@@ -96,6 +99,8 @@ namespace fe {
         properties.setPropertyValue<int>(SdlController::SdlProperties::WINDOW_POSITION_Y_KEY, windowRelativePosition.second);
         properties.setPropertyValue<int>(SdlController::SdlProperties::WINDOW_WIDTH_KEY, windowSize.first);
         properties.setPropertyValue<int>(SdlController::SdlProperties::WINDOW_HEIGHT_KEY, windowSize.second);
+
+        findScale();
     }
 
     void SdlController::createWindow() {
@@ -112,7 +117,7 @@ namespace fe {
             properties.getPropertyValue<int>(SdlController::SdlProperties::WINDOW_POSITION_Y_KEY) + bounds.y,
             properties.getPropertyValue<int>(SdlController::SdlProperties::WINDOW_WIDTH_KEY),
             properties.getPropertyValue<int>(SdlController::SdlProperties::WINDOW_HEIGHT_KEY),
-            SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI
+            SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
         );
 
         if (!window) {
@@ -132,12 +137,11 @@ namespace fe {
         SDL_GL_SetSwapInterval(1);
     }
 
-    void SdlController::findScale()
-    {
-        int windowW, windowH, drawableW, drawableH;
-        SDL_GetWindowSize(window, &windowW, &windowH);
-        SDL_GL_GetDrawableSize(window, &drawableW, &drawableH);
+    void SdlController::findScale() {
+        int windowW = properties.getPropertyValue<int>(SdlController::SdlProperties::WINDOW_WIDTH_KEY);
+        int windowH = properties.getPropertyValue<int>(SdlController::SdlProperties::WINDOW_HEIGHT_KEY);
 
-        SdlController::SdlProperties::scale = float(drawableW) / float(windowW);
+        SdlController::SdlProperties::scale.first = float(windowW) / SdlController::SdlProperties::DEFAULT_WINDOW_WIDTH_VALUE;
+        SdlController::SdlProperties::scale.second = float(windowH) / SdlController::SdlProperties::DEFAULT_WINDOW_HEIGHT_VALUE;
     }
 }

@@ -17,7 +17,6 @@
 #include <rapidjson/prettywriter.h>
 #include <rapidjson/stringbuffer.h>
 
-#include "../../application/Application.h"
 #include "../../utils/properties/Properties.hpp"
 #include "../../utils/properties/PropertiesLoader.hpp"
 #include "../../utils/properties/PropertiesFileBuilder.hpp"
@@ -35,10 +34,10 @@ namespace fe {
                     inline static const int DEFAULT_MONITOR_ID_VALUE = 0;
 
                     inline static const std::u8string WINDOW_POSITION_X_KEY = u8"windowPostitionX";
-                    inline static const int DEFAULT_WINDOW_POSITION_X_VALUE = 0;
+                    inline static const int DEFAULT_WINDOW_POSITION_X_VALUE = SDL_WINDOWPOS_CENTERED;
 
                     inline static const std::u8string WINDOW_POSITION_Y_KEY = u8"windowPostitionY";
-                    inline static const int DEFAULT_WINDOW_POSITION_Y_VALUE = 0;
+                    inline static const int DEFAULT_WINDOW_POSITION_Y_VALUE = SDL_WINDOWPOS_CENTERED;
 
                     inline static const std::u8string WINDOW_WIDTH_KEY = u8"windowWidth";
                     inline static const int DEFAULT_WINDOW_WIDTH_VALUE = 600;
@@ -53,15 +52,16 @@ namespace fe {
                     inline static const float CLEAR_COLOR_B = 0.1f;
                     inline static const float CLEAR_COLOR_A = 1.0f;
 
-                    inline static float scale;
+                    inline static std::pair<float, float> scale;
             };
 
         private:
-            static SdlController::SdlProperties properties;
             inline static SDL_Window* window = nullptr;
             inline static SDL_GLContext glContext = nullptr;
 
         public:
+            inline static SdlController::SdlProperties properties;
+
             static void init();
             static void destroy();
 

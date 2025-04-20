@@ -49,7 +49,7 @@ namespace fe {
         std::atomic<std::size_t>* bytesProcessed
     ) {
         std::string pathStr(reinterpret_cast<const char*>(pathChunk.data()), pathChunk.size());
-        std::filesystem::path outputFilePath = outputPath / std::filesystem::u8path(pathStr);
+        std::filesystem::path outputFilePath = outputPath / std::filesystem::path(pathStr);
         
         std::filesystem::create_directories(outputFilePath.parent_path());
         std::ofstream out(outputFilePath, std::ios::binary);

@@ -8,24 +8,19 @@
 namespace fe {
     class MainGuiWindowController: public GuiWindowController {
         private:
-            MainGuiWindowController() = default;
-            ~MainGuiWindowController() = default;
-            
+            MainGuiWindowController() {}
             MainGuiWindow* window = &MainGuiWindow::getInstance();
 
         public:
-            static MainGuiWindowController& getInstance() {
-                static MainGuiWindowController instance;
-                return instance;
-            }
+            static MainGuiWindowController instance;
 
             std::optional<GuiWindowId> process() override {
-                window->setAndDraw();
+                window->draw();
 
                 switch (window->action)
                 {
                     case MainWindowAction::PROFILE:
-                        return std::nullopt;
+                        break;
                     
                     case MainWindowAction::EXIT:
                         return GuiWindowId::EXIT;
