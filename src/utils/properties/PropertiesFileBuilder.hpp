@@ -29,6 +29,14 @@ namespace fe {
                     std::string value = properties->getPropertyValue<std::string>(key);
                     rapidjson::Value valueValue(value.c_str(), allocator);
                     document.AddMember(nameValue, valueValue, allocator);
+                }else if constexpr (std::is_same_v<T, ImVec4>) {
+                    ImVec4 value = properties->getPropertyValue<ImVec4>(key);
+                    rapidjson::Value valueValue(rapidjson::kArrayType);
+                    valueValue.PushBack(value.x, allocator);
+                    valueValue.PushBack(value.y, allocator);
+                    valueValue.PushBack(value.z, allocator);
+                    valueValue.PushBack(value.w, allocator);
+                    document.AddMember(nameValue, valueValue, allocator);
                 } else {
                     T value = properties->getPropertyValue<T>(key);
                     rapidjson::Value valueValue(value);

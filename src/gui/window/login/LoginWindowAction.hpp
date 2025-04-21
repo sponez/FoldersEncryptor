@@ -1,9 +1,8 @@
 #pragma once
 
 namespace fe {
-    enum class MainWindowAction {
+    enum class LoginWindowAction {
         NONE,
-        PROFILE,
-        EXIT
+        HASHING
     };
 }

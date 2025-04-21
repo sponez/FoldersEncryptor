@@ -1,5 +1,7 @@
 #pragma once
 
+#include <math.h>
+
 #include "imgui/ImguiController.h"
 #include "sdl/SdlController.h"
 #include "window/GuiWindowId.hpp"
@@ -7,6 +9,7 @@
 #include "window/abstract/GuiWindow.hpp"
 #include "window/abstract/GuiWindowController.hpp"
 #include "window/main/MainGuiWindowController.hpp"
+#include "window/login/LoginGuiWindowController.hpp"
 
 namespace fe {
     class GuiGlobalController {
@@ -14,9 +17,7 @@ namespace fe {
             static void startGui() {
                 SdlController::init();
                 GuiWindow::loadProperties();
-
-                ImGui::GetStyle().ItemSpacing.x = GuiWindow::properties.getPropertyValue<float>(GuiWindow::GuiWindowProperties::SPASE_X_KEY);
-                ImGui::GetStyle().ItemSpacing.y = GuiWindow::properties.getPropertyValue<float>(GuiWindow::GuiWindowProperties::SPASE_Y_KEY);
+                GuiWindow::setProperties();
 
                 currentWindowController = &MainGuiWindowController::getInstance();
                 running = true;
@@ -79,7 +80,7 @@ namespace fe {
                     case SDL_WINDOWEVENT_DISPLAY_CHANGED:
                         SdlController::updateProperties();
                         SdlController::findScale();
-                        ImguiController::setFont();
+                        GuiWindow::setProperties();
                         break;
                 }
             }
@@ -95,6 +96,10 @@ namespace fe {
                         currentWindowController = &MainGuiWindowController::getInstance();
                         break;
                 
+                    case GuiWindowId::LOGIN:
+                        currentWindowController = &LoginGuiWindowController::getInstance();
+                        break;
+                        
                     default:
                         break;
                 }

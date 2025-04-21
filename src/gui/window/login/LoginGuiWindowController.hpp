@@ -1,29 +1,30 @@
 #pragma once
 
-#include "MainGuiWindow.hpp"
-#include "MainWindowAction.hpp"
+#include "LoginGuiWindow.hpp"
+#include "LoginWindowAction.hpp"
 #include "../GuiWindowId.hpp"
 #include "../abstract/GuiWindowController.hpp"
 
 namespace fe {
-    class MainGuiWindowController: public GuiWindowController {
+    class LoginGuiWindowController: public GuiWindowController {
         private:
-            MainGuiWindowController() {}
-            MainGuiWindow* window = &MainGuiWindow::getInstance();
+            LoginGuiWindow* window = &LoginGuiWindow::getInstance();
+
+            LoginGuiWindowController() = default;
+            ~LoginGuiWindowController() = default;
 
         public:
-            static MainGuiWindowController instance;
+            static LoginGuiWindowController& getInstance() {
+                static LoginGuiWindowController instance;
+                return instance;
+            }
 
             std::optional<GuiWindowId> process() override {
-                window->draw();
+                window->setAndDraw();
 
-                switch (window->action)
-                {
-                    case MainWindowAction::PROFILE:
-                        break;
-                    
-                    case MainWindowAction::EXIT:
-                        return GuiWindowId::EXIT;
+                switch (window->action) {
+                    case LoginWindowAction::HASHING:
+                        return std::nullopt;
 
                     default:
                         return std::nullopt;

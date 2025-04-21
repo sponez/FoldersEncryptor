@@ -4,17 +4,20 @@
 #include <string>
 #include <variant>
 
+#include <imgui.h>
+
 #include "../string/StringUtils.hpp"
 
 namespace fe {
-    using Property = std::variant<int, float, bool, std::string>;
+    using Property = std::variant<int, float, bool, std::string, ImVec4>;
 
     template <typename T>
     concept SupportedJsonType =
         std::same_as<T, int> ||
         std::same_as<T, float> ||
         std::same_as<T, bool> ||
-        std::same_as<T, std::string>;
+        std::same_as<T, std::string> ||
+        std::same_as<T, ImVec4>;
 
     class Properties {
         private:

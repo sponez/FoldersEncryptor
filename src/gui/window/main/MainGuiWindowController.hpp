@@ -24,8 +24,8 @@ namespace fe {
 
                 switch (window->action)
                 {
-                    case MainWindowAction::PROFILE:
-                        return std::nullopt;
+                    case MainWindowAction::LOGIN:
+                        return GuiWindowId::LOGIN;
                     
                     case MainWindowAction::EXIT:
                         return GuiWindowId::EXIT;

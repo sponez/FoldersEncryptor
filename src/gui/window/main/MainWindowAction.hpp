@@ -3,7 +3,7 @@
 namespace fe {
     enum class MainWindowAction {
         NONE,
-        PROFILE,
+        LOGIN,
         EXIT
     };
 }

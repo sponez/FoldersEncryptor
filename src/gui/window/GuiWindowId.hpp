@@ -3,6 +3,7 @@
 namespace fe {
     enum class GuiWindowId {
         EXIT,
-        MAIN
+        MAIN,
+        LOGIN
     };
 }

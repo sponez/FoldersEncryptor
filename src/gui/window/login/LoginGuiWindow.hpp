@@ -1,32 +1,42 @@
 #pragma once
 
+#include <array>
 #include <string>
 
 #include <imgui.h>
 
 #include "../abstract/GuiWindow.hpp"
-#include "MainWindowAction.hpp"
+#include "LoginWindowAction.hpp"
 
 namespace fe {
-    class MainGuiWindow: public GuiWindow {
+    class LoginGuiWindow: public GuiWindow {
         private:
-            inline static const std::string PROFILE_BUTTON_NAME = "Profile";
-            inline static const std::string EXIT_BUTTON_NAME = "Exit";
+            inline static const std::string USERNAME_FIELD = "Username";
+            inline static const std::string PASSWORD_FIELD = "Password";
+            inline static const std::string OK_BUTTON_NAME = "OK";
 
-            MainGuiWindow() {}
+            std::array<char, 64> username = std::array<char, 64>();
+            std::array<char, 64> password = std::array<char, 64>();
+
+            LoginGuiWindow() = default;
+            ~LoginGuiWindow() = default;
 
         public:
-            static MainGuiWindow instance;
-            MainWindowAction action = MainWindowAction::NONE;
+            LoginWindowAction action = LoginWindowAction::NONE;
+            static LoginGuiWindow& getInstance() {
+                static LoginGuiWindow instance;
+                return instance;
+            }
 
+        protected:
             void draw() override {
-                if (ImGui::Button(PROFILE_BUTTON_NAME.c_str())) {
-                    action = MainWindowAction::PROFILE;
-                }
-
-                if (ImGui::Button(EXIT_BUTTON_NAME.c_str())) {
-                    action = MainWindowAction::EXIT;
-                }
+                GuiUtils::centeredItemGroup(
+                    {
+                        std::make_shared<GuiUtils::InputText>(USERNAME_FIELD, username.data(), username.size()),
+                        std::make_shared<GuiUtils::InputText>(PASSWORD_FIELD, password.data(), password.size()),
+                        std::make_shared<GuiUtils::Button>(OK_BUTTON_NAME, []() {LoginGuiWindow::getInstance().action = LoginWindowAction::HASHING;})
+                    }
+                );
             }
     };
 }

@@ -13,7 +13,7 @@
 namespace fe {
     class MainGuiWindow: public GuiWindow {
         private:
-            inline static const std::string PROFILE_BUTTON_NAME = "Profile";
+            inline static const std::string LOGIN_BUTTON_NAME = "Login";
             inline static const std::string EXIT_BUTTON_NAME = "Exit";
 
             MainGuiWindow() = default;
@@ -28,10 +28,10 @@ namespace fe {
 
         protected:
             void draw() override {
-                GuiUtils::centeredButtonGroup(
+                GuiUtils::centeredItemGroup(
                     {
-                        { PROFILE_BUTTON_NAME, [](){ MainGuiWindow::getInstance().action = MainWindowAction::PROFILE; } },
-                        { EXIT_BUTTON_NAME, [](){ MainGuiWindow::getInstance().action = MainWindowAction::EXIT; } }
+                        std::make_shared<GuiUtils::Button>(LOGIN_BUTTON_NAME, [](){ MainGuiWindow::getInstance().action = MainWindowAction::LOGIN; }),
+                        std::make_shared<GuiUtils::Button>(EXIT_BUTTON_NAME, [](){ MainGuiWindow::getInstance().action = MainWindowAction::EXIT; })
                     }
                 );
             }

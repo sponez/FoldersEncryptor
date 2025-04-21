@@ -55,6 +55,18 @@ namespace fe {
                     properties->setPropertyValue<std::string>(key, jsonValue.GetString());
                 } else if constexpr (std::same_as<T, float>) {
                     properties->setPropertyValue<float>(key, jsonValue.GetFloat());
+                } else if constexpr (std::same_as<T, ImVec4>) {
+                    if (!jsonValue.IsArray() || jsonValue.Size() != 4) {
+                        properties->setPropertyValue<ImVec4>(key, defaultValue);
+                    } else {
+                        ImVec4 color(
+                            jsonValue[0].GetFloat(),
+                            jsonValue[1].GetFloat(),
+                            jsonValue[2].GetFloat(),
+                            jsonValue[3].GetFloat()
+                        );
+                        properties->setPropertyValue<ImVec4>(key, color);
+                    }
                 }
 
                 return this;
