@@ -99,8 +99,6 @@ namespace fe {
         properties.setPropertyValue<int>(SdlController::SdlProperties::WINDOW_POSITION_Y_KEY, windowRelativePosition.second);
         properties.setPropertyValue<int>(SdlController::SdlProperties::WINDOW_WIDTH_KEY, windowSize.first);
         properties.setPropertyValue<int>(SdlController::SdlProperties::WINDOW_HEIGHT_KEY, windowSize.second);
-
-        findScale();
     }
 
     void SdlController::createWindow() {

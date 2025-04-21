@@ -4,6 +4,7 @@
 #include "sdl/SdlController.h"
 #include "window/GuiWindowId.hpp"
 
+#include "window/abstract/GuiWindow.hpp"
 #include "window/abstract/GuiWindowController.hpp"
 #include "window/main/MainGuiWindowController.hpp"
 
@@ -12,9 +13,16 @@ namespace fe {
         public:
             static void startGui() {
                 SdlController::init();
+                GuiWindow::loadProperties();
+
+                ImGui::GetStyle().ItemSpacing.x = GuiWindow::properties.getPropertyValue<float>(GuiWindow::GuiWindowProperties::SPASE_X_KEY);
+                ImGui::GetStyle().ItemSpacing.y = GuiWindow::properties.getPropertyValue<float>(GuiWindow::GuiWindowProperties::SPASE_Y_KEY);
+
                 currentWindowController = &MainGuiWindowController::getInstance();
                 running = true;
                 run();
+
+                GuiWindow::saveProperties();
                 SdlController::destroy();
             }
 
@@ -70,6 +78,8 @@ namespace fe {
                     case SDL_WINDOWEVENT_SIZE_CHANGED:
                     case SDL_WINDOWEVENT_DISPLAY_CHANGED:
                         SdlController::updateProperties();
+                        SdlController::findScale();
+                        ImguiController::setFont();
                         break;
                 }
             }

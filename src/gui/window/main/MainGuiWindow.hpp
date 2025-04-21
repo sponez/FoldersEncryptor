@@ -1,12 +1,14 @@
 #pragma once
 
 #include <string>
+#include <map>
 
 #include <imgui.h>
 
 #include "MainWindowAction.hpp"
 #include "../GuiUtils.hpp"
 #include "../abstract/GuiWindow.hpp"
+#include "../../sdl/SdlController.h"
 
 namespace fe {
     class MainGuiWindow: public GuiWindow {
@@ -26,13 +28,12 @@ namespace fe {
 
         protected:
             void draw() override {
-                if (GuiUtils::centredButton(PROFILE_BUTTON_NAME.c_str())) {
-                    action = MainWindowAction::PROFILE;
-                }
-
-                if (GuiUtils::centredButton(EXIT_BUTTON_NAME.c_str())) {
-                    action = MainWindowAction::EXIT;
-                }
+                GuiUtils::centeredButtonGroup(
+                    {
+                        { PROFILE_BUTTON_NAME, [](){ MainGuiWindow::getInstance().action = MainWindowAction::PROFILE; } },
+                        { EXIT_BUTTON_NAME, [](){ MainGuiWindow::getInstance().action = MainWindowAction::EXIT; } }
+                    }
+                );
             }
     };
 }

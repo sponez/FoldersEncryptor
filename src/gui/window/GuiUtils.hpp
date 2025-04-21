@@ -1,20 +1,49 @@
 #pragma once
 
+#include <functional>
+#include <string>
+#include <vector>
+
 #include <imgui.h>
 
+#include "../window/abstract/GuiWindow.hpp"
 #include "../sdl/SdlController.h"
 
 namespace fe {
     class GuiUtils {
         public:
-            inline static float BUTTON_SIZE_WIDTH = 100.0f;
-            inline static float BUTTON_SIZE_HEIGHT = 30.0f;
+            static bool centredButton(const char* label) {
+                float buttonWidth =
+                    GuiWindow::properties.getPropertyValue<float>(GuiWindow::GuiWindowProperties::BUTTON_WIDTH_KEY)
+                    * SdlController::properties.scale.first;
 
-            static bool centredButton(const char* label, const ImVec2& size_arg = ImVec2(BUTTON_SIZE_WIDTH, BUTTON_SIZE_HEIGHT)) {
+                float buttonHeight =
+                    GuiWindow::properties.getPropertyValue<float>(GuiWindow::GuiWindowProperties::BUTTON_HEIGHT_KEY)
+                    * SdlController::properties.scale.second;
+
                 float windowWidth = ImGui::GetWindowSize().x;
-                ImGui::SetCursorPosX((windowWidth - size_arg.x) * 0.5f);
+
+                ImGui::SetCursorPosX((windowWidth - buttonWidth) * 0.5f);
                 
-                return ImGui::Button(label, ImVec2(size_arg.x * SdlController::properties.scale.first, size_arg.y * SdlController::properties.scale.second));
+                return ImGui::Button(label, ImVec2(buttonWidth , buttonHeight));
+            }
+
+            static void centeredButtonGroup(const std::vector<std::pair<std::string, std::function<void()>>>& actions) {
+                float buttonHeight =
+                    GuiWindow::properties.getPropertyValue<float>(GuiWindow::GuiWindowProperties::BUTTON_HEIGHT_KEY)
+                    * SdlController::properties.scale.second;
+
+                float spacing = ImGui::GetStyle().ItemSpacing.y * SdlController::properties.scale.second;
+                float totalHeight = actions.size() * buttonHeight + (actions.size() - 1) * spacing;
+                float startY = (ImGui::GetWindowSize().y - totalHeight) * 0.5f;
+        
+                ImGui::SetCursorPosY(startY);
+        
+                for (const auto& [label, callback] : actions) {
+                    if (GuiUtils::centredButton(label.c_str())) {
+                        callback();
+                    }
+                }
             }
 
         private:

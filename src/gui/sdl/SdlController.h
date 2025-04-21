@@ -27,7 +27,7 @@ namespace fe {
         public:
             class SdlProperties: public Properties {
                 public:
-                    inline static const std::u8string FILE = u8"sdl/properties";
+                    inline static const std::u8string FILE = u8"sdl/.properties";
                     inline static const std::u8string APPLICATION_NAME = u8"Folders Encryptor";
 
                     inline static const std::u8string MONITOR_ID_KEY = u8"monitorId";
@@ -71,10 +71,11 @@ namespace fe {
             static void loadProperties();
             static void updateProperties();
         
+            static void findScale();
+
         private:
             static void createWindow();
             static void createGlContext();
             static void enableVSync();
-            static void findScale();
     };
 }

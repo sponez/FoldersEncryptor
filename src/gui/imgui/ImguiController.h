@@ -16,7 +16,7 @@ namespace fe {
         public:
             class ImguiProperties: public Properties {
                 public:
-                    inline static const std::u8string FILE = u8"imgui/properties";
+                    inline static const std::u8string FILE = u8"imgui/.properties";
                     inline static const std::u8string GLSL_VERSION = u8"#version 130";
 
                     inline static const std::u8string FONT_KEY = u8"font";
@@ -38,7 +38,6 @@ namespace fe {
             static void saveProperties();
             static void loadProperties();
 
-        private:
             static void setFont();
             static void setTheme();
     };

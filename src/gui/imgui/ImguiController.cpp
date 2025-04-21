@@ -6,9 +6,6 @@ namespace fe {
 
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
-
-        setFont();
-        setTheme();
     
         if (!ImGui_ImplSDL2_InitForOpenGL(window, *glContext)) {
             throw std::runtime_error("Failed to init ImGui + SDL2");
@@ -17,6 +14,9 @@ namespace fe {
         if (!ImGui_ImplOpenGL3_Init(StringUtils::string(ImguiController::ImguiProperties::GLSL_VERSION).c_str())) {
             throw std::runtime_error("Failed to init ImGui + OpenGL");
         }
+
+        setFont();
+        setTheme();
     }
 
     void ImguiController::destroy() {
@@ -59,8 +59,9 @@ namespace fe {
     void ImguiController::setFont() {
         ImGuiIO& io = ImGui::GetIO();
         std::string fontPath = properties.getPropertyValue<std::string>(ImguiController::ImguiProperties::FONT_KEY);
-        float fontSize = properties.getPropertyValue<float>(ImguiController::ImguiProperties::FONT_SIZE_KEY);
+        float fontSize = properties.getPropertyValue<float>(ImguiController::ImguiProperties::FONT_SIZE_KEY) * SdlController::SdlProperties::scale.second;
 
+        io.Fonts->Clear();
         if (!fontPath.empty()) {
             io.Fonts->AddFontFromFileTTF(
                 fontPath.c_str(),
@@ -69,7 +70,14 @@ namespace fe {
                 io.Fonts->GetGlyphRangesChineseFull()
             );
         } else {
-            io.Fonts->AddFontDefault();
+            ImFontConfig config;
+            config.SizePixels = fontSize;
+
+            ImFont* font = io.Fonts->AddFontDefault(&config);
+            io.FontDefault = font;
+
+            ImGui_ImplOpenGL3_DestroyFontsTexture();
+            ImGui_ImplOpenGL3_CreateFontsTexture();
         }
     }
 
