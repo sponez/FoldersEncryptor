@@ -7,6 +7,11 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_EXE_LINKER_FLAGS "-mwindows")
 
+if (WIN32)
+    enable_language(RC)
+    set(APP_ICON_RESOURCE "${CMAKE_CURRENT_SOURCE_DIR}/resources/icons/icon.rc")
+endif()
+
 # Include
 include_directories(
     vendor/imgui
@@ -30,6 +35,7 @@ set(IMGUI_SOURCES
 set(APP_SOURCES
     src/main.cpp
     src/application/Application.hpp
+    resources/fonts/JetBrainsMono_Regular.hpp
 
     src/gui/GuiGlobalController.hpp
     src/gui/imgui/ImguiController.cpp
@@ -48,6 +54,9 @@ set(APP_SOURCES
     src/gui/window/functional/FunctionalGuiWindow.hpp
     src/gui/window/functional/FunctionalGuiWindowController.hpp
     src/gui/window/functional/FunctionalWindowAction.hpp
+    src/gui/window/properties/PropertiesGuiWindow.hpp
+    src/gui/window/properties/PropertiesGuiWindowController.cpp
+    src/gui/window/properties/PropertiesWindowAction.hpp
     
     src/selector/Selector.cpp
 
@@ -72,6 +81,7 @@ set(APP_SOURCES
     src/utils/properties/Properties.hpp
     src/utils/properties/PropertiesLoader.hpp
     src/utils/properties/PropertiesFileBuilder.hpp
+    src/utils/storage/StorageChecker.cpp
     src/utils/string/StringUtils.hpp
 )
 
@@ -100,6 +110,7 @@ find_package(Threads REQUIRED)
 add_executable(FoldersEncryptor
     ${APP_SOURCES}
     ${IMGUI_SOURCES}
+    ${APP_ICON_RESOURCE}
 )
 
 # Target

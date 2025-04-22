@@ -13,6 +13,7 @@
 #include "../../../utils/properties/PropertiesLoader.hpp"
 #include "../../../utils/properties/PropertiesFileBuilder.hpp"
 #include "../../../utils/string/StringUtils.hpp"
+#include "../../../../resources/fonts/JetBrainsMono_Regular.hpp"
 
 namespace fe {
     class GuiWindow {
@@ -21,17 +22,14 @@ namespace fe {
                 public:
                     inline static const std::u8string FILE = u8"imgui/.properties";
 
-                    inline static const std::u8string BUTTON_WIDTH_KEY = u8"buttonWidth";
-                    inline static const float DEFAULT_BUTTON_WIDTH_VALUE = 160.0f;
+                    inline static const std::u8string BUTTON_SIZE_KEY = u8"buttonSize";
+                    inline static const ImVec2 DEFAULT_BUTTON_SIZE_VALUE = ImVec2(150.0f, 32.0f);
 
-                    inline static const std::u8string BUTTON_HEIGHT_KEY = u8"buttonHeight";
-                    inline static const float DEFAULT_BUTTON_HEIGHT_VALUE = 36.0f;
+                    inline static const std::u8string SPACE_KEY = u8"space";
+                    inline static const ImVec2 DEFAULT_SPACE_VALUE = ImVec2(15.0f, 15.0f);
 
-                    inline static const std::u8string SPASE_X_KEY = u8"spaceX";
-                    inline static const float DEFAULT_SPASE_X_VALUE = 16.0f;
-
-                    inline static const std::u8string SPASE_Y_KEY = u8"spaceY";
-                    inline static const float DEFAULT_SPASE_Y_VALUE = 16.0f;
+                    inline static const std::u8string INNER_SPACE_KEY = u8"innerSpace";
+                    inline static const ImVec2 DEFAULT_INNER_SPACE_VALUE = ImVec2(7.0f, 7.0f);
 
                     inline static const std::u8string BUTTON_HOVERED_COLOR_KEY = u8"buttonHoveredColor";
                     inline static const ImVec4 DEFAULT_BUTTON_HOVERED_COLOR_VALUE = ImVec4(0.25f, 0.45f, 0.75f, 1.0f);
@@ -40,7 +38,7 @@ namespace fe {
                     inline static const ImVec4 DEFAULT_BUTTON_ACTIVE_COLOR_VALUE = ImVec4(0.15f, 0.35f, 0.55f, 1.0f);
 
                     inline static const std::u8string FRAME_ROUNDING_KEY = u8"frameRounding";
-                    inline static const float DEFAULT_FRAME_ROUNDING_VALUE = 6.0f;
+                    inline static const float DEFAULT_FRAME_ROUNDING_VALUE = 5.0f;
 
                     inline static const std::u8string FRAME_BORDER_SIZE_KEY = u8"frameBorderSize";
                     inline static const float DEFAULT_FRAME_BORDER_SIZE_VALUE = 1.0f;
@@ -83,21 +81,20 @@ namespace fe {
 
             static void saveProperties() {
                 std::string jsonFile =
-                PropertiesFileBuilder(&properties)
-                    .save<float>(GuiWindow::GuiWindowProperties::BUTTON_WIDTH_KEY)
-                    ->save<float>(GuiWindow::GuiWindowProperties::BUTTON_HEIGHT_KEY)
-                    ->save<float>(GuiWindow::GuiWindowProperties::SPASE_X_KEY)
-                    ->save<float>(GuiWindow::GuiWindowProperties::SPASE_Y_KEY)
-                    ->save<ImVec4>(GuiWindow::GuiWindowProperties::BUTTON_HOVERED_COLOR_KEY)
-                    ->save<ImVec4>(GuiWindow::GuiWindowProperties::BUTTON_ACTIVE_COLOR_KEY)
-                    ->save<float>(GuiWindow::GuiWindowProperties::FRAME_ROUNDING_KEY)
-                    ->save<float>(GuiWindow::GuiWindowProperties::FRAME_BORDER_SIZE_KEY)
-                    ->save<ImVec4>(GuiWindow::GuiWindowProperties::FRAME_BORDER_COLOR_KEY)
-                    ->save<float>(GuiWindow::GuiWindowProperties::INPUT_WIDTH_KEY)
-                    ->save<std::string>(GuiWindow::GuiWindowProperties::FONT_KEY)
-                    ->save<float>(GuiWindow::GuiWindowProperties::FONT_SIZE_KEY)
-                    ->save<int>(GuiWindow::GuiWindowProperties::THEME_KEY)
-                    ->build();
+                    PropertiesFileBuilder(&properties)
+                        .save<ImVec2>(GuiWindow::GuiWindowProperties::BUTTON_SIZE_KEY)
+                        ->save<ImVec2>(GuiWindow::GuiWindowProperties::SPACE_KEY)
+                        ->save<ImVec2>(GuiWindow::GuiWindowProperties::INNER_SPACE_KEY)
+                        ->save<ImVec4>(GuiWindow::GuiWindowProperties::BUTTON_HOVERED_COLOR_KEY)
+                        ->save<ImVec4>(GuiWindow::GuiWindowProperties::BUTTON_ACTIVE_COLOR_KEY)
+                        ->save<float>(GuiWindow::GuiWindowProperties::FRAME_ROUNDING_KEY)
+                        ->save<float>(GuiWindow::GuiWindowProperties::FRAME_BORDER_SIZE_KEY)
+                        ->save<ImVec4>(GuiWindow::GuiWindowProperties::FRAME_BORDER_COLOR_KEY)
+                        ->save<float>(GuiWindow::GuiWindowProperties::INPUT_WIDTH_KEY)
+                        ->save<std::string>(GuiWindow::GuiWindowProperties::FONT_KEY)
+                        ->save<float>(GuiWindow::GuiWindowProperties::FONT_SIZE_KEY)
+                        ->save<int>(GuiWindow::GuiWindowProperties::THEME_KEY)
+                        ->build();
     
                 std::filesystem::path savePath = StringUtils::path(GuiWindow::GuiWindowProperties::FILE);
                 std::filesystem::create_directory(savePath.parent_path());
@@ -109,18 +106,15 @@ namespace fe {
             static void loadProperties() {
                 PropertiesLoader loader(GuiWindow::GuiWindowProperties::FILE, &properties);
 
-                loader.loadOrDefault<float>(
-                    GuiWindow::GuiWindowProperties::BUTTON_WIDTH_KEY,
-                    GuiWindow::GuiWindowProperties::DEFAULT_BUTTON_WIDTH_VALUE
-                )->loadOrDefault<float>(
-                    GuiWindow::GuiWindowProperties::BUTTON_HEIGHT_KEY,
-                    GuiWindow::GuiWindowProperties::DEFAULT_BUTTON_HEIGHT_VALUE
-                )->loadOrDefault<float>(
-                    GuiWindow::GuiWindowProperties::SPASE_X_KEY,
-                    GuiWindow::GuiWindowProperties::DEFAULT_SPASE_X_VALUE
-                )->loadOrDefault<float>(
-                    GuiWindow::GuiWindowProperties::SPASE_Y_KEY,
-                    GuiWindow::GuiWindowProperties::DEFAULT_SPASE_Y_VALUE
+                loader.loadOrDefault<ImVec2>(
+                    GuiWindow::GuiWindowProperties::BUTTON_SIZE_KEY,
+                    GuiWindow::GuiWindowProperties::DEFAULT_BUTTON_SIZE_VALUE
+                )->loadOrDefault<ImVec2>(
+                    GuiWindow::GuiWindowProperties::SPACE_KEY,
+                    GuiWindow::GuiWindowProperties::DEFAULT_SPACE_VALUE
+                )->loadOrDefault<ImVec2>(
+                    GuiWindow::GuiWindowProperties::INNER_SPACE_KEY,
+                    GuiWindow::GuiWindowProperties::DEFAULT_INNER_SPACE_VALUE
                 )->loadOrDefault<ImVec4>(
                     GuiWindow::GuiWindowProperties::BUTTON_HOVERED_COLOR_KEY,
                     GuiWindow::GuiWindowProperties::DEFAULT_BUTTON_HOVERED_COLOR_VALUE
@@ -161,13 +155,12 @@ namespace fe {
         
         private:
             static void setSpacing() {
-                ImGui::GetStyle().ItemSpacing.x =
-                    GuiWindow::properties.getPropertyValue<float>(GuiWindow::GuiWindowProperties::SPASE_X_KEY)
-                    * SdlController::SdlProperties::scale.first;
+                ImGuiStyle& style = ImGui::GetStyle();
+                ImVec2 space = GuiWindow::properties.getPropertyValue<ImVec2>(GuiWindow::GuiWindowProperties::SPACE_KEY);
+                ImVec2 innerSpace = GuiWindow::properties.getPropertyValue<ImVec2>(GuiWindow::GuiWindowProperties::INNER_SPACE_KEY);
 
-                ImGui::GetStyle().ItemSpacing.y =
-                    GuiWindow::properties.getPropertyValue<float>(GuiWindow::GuiWindowProperties::SPASE_Y_KEY)
-                    * SdlController::SdlProperties::scale.second;
+                style.ItemSpacing = ImVec2(space.x * SdlController::SdlProperties::scale.first, space.y * SdlController::SdlProperties::scale.second);
+                style.ItemInnerSpacing = ImVec2(innerSpace.x * SdlController::SdlProperties::scale.first, innerSpace.y * SdlController::SdlProperties::scale.second);
             }
 
             static void setButtonPushing() {
@@ -205,23 +198,35 @@ namespace fe {
                     * scaleAvg;
         
                 io.Fonts->Clear();
+
+                ImVector<ImWchar> ranges;
+                ImFontGlyphRangesBuilder builder;
+                builder.AddText("↩");
+                builder.AddRanges(io.Fonts->GetGlyphRangesDefault());
+                builder.BuildRanges(&ranges);
+
                 if (!fontPath.empty()) {
                     io.Fonts->AddFontFromFileTTF(
                         fontPath.c_str(),
                         fontSize,
                         nullptr,
-                        io.Fonts->GetGlyphRangesChineseFull()
+                        ranges.Data
                     );
                 } else {
-                    ImFontConfig config;
-                    config.SizePixels = fontSize;
-        
-                    ImFont* font = io.Fonts->AddFontDefault(&config);
-                    io.FontDefault = font;
-        
-                    ImGui_ImplOpenGL3_DestroyFontsTexture();
-                    ImGui_ImplOpenGL3_CreateFontsTexture();
+                    ImFontConfig fontCfg;
+                    fontCfg.FontDataOwnedByAtlas = false;
+
+                    io.Fonts->AddFontFromMemoryTTF(
+                        JetBrainsMono_Regular_ttf,
+                        JetBrainsMono_Regular_ttf_len,
+                        fontSize,
+                        &fontCfg,
+                        ranges.Data
+                    );
                 }
+
+                ImGui_ImplOpenGL3_DestroyFontsTexture();
+                ImGui_ImplOpenGL3_CreateFontsTexture();
             }
         
             static void setTheme() {

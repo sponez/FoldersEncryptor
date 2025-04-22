@@ -11,6 +11,7 @@
 #include "window/main/MainGuiWindowController.hpp"
 #include "window/login/LoginGuiWindowController.h"
 #include "window/functional/FunctionalGuiWindowController.hpp"
+#include "window/properties/PropertiesGuiWindowController.hpp"
 
 namespace fe {
     class GuiGlobalController {
@@ -103,6 +104,10 @@ namespace fe {
                     
                     case GuiWindowId::FUNCTIONAL:
                         currentWindowController = &FunctionalGuiWindowController::getInstance();
+                        break;
+                    
+                    case GuiWindowId::PROPERTIES:
+                        currentWindowController = &PropertiesGuiWindowController::getInstance();
                         break;
 
                     default:

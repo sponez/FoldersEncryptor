@@ -5,6 +5,9 @@ namespace fe {
         EXIT,
         MAIN,
         LOGIN,
-        FUNCTIONAL
+        FUNCTIONAL,
+        PROPERTIES,
+        FILE_PASSWORD,
+        PROGRESS_BAR
     };
 }

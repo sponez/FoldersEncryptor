@@ -8,6 +8,7 @@
 
 #include "../window/abstract/GuiWindow.hpp"
 #include "../sdl/SdlController.h"
+#include "../../utils/string/StringUtils.hpp"
 
 namespace fe {
     class GuiUtils {
@@ -25,31 +26,22 @@ namespace fe {
 
             struct Button: public Item {
                 public:
+                    ImVec2 standartSize = GuiWindow::properties.getPropertyValue<ImVec2>(GuiWindow::GuiWindowProperties::BUTTON_SIZE_KEY);
                     std::function<void()> function;
 
                     Button(const std::string& label, const std::function<void()>& function): Item{label}, function(function) {}
 
                     float getWidth() override {
-                        return
-                            GuiWindow::properties.getPropertyValue<float>(GuiWindow::GuiWindowProperties::BUTTON_WIDTH_KEY)
-                            * SdlController::properties.scale.first;
+                        return standartSize.x * SdlController::properties.scale.first;
                     }
 
                     float getHeight() override {
-                        return
-                            GuiWindow::properties.getPropertyValue<float>(GuiWindow::GuiWindowProperties::BUTTON_HEIGHT_KEY)
-                            * SdlController::properties.scale.second;
+                        return standartSize.y * SdlController::properties.scale.second;
                     }
 
                     void draw() override {
-                        float buttonWidth =
-                            GuiWindow::properties.getPropertyValue<float>(GuiWindow::GuiWindowProperties::BUTTON_WIDTH_KEY)
-                            * SdlController::properties.scale.first;
-    
-                        float buttonHeight =
-                            GuiWindow::properties.getPropertyValue<float>(GuiWindow::GuiWindowProperties::BUTTON_HEIGHT_KEY)
-                            * SdlController::properties.scale.second;
-        
+                        float buttonWidth = standartSize.x * SdlController::properties.scale.first;
+                        float buttonHeight = standartSize.y * SdlController::properties.scale.second;
                         float windowWidth = ImGui::GetWindowSize().x;
         
                         ImGui::SetCursorPosX((windowWidth - buttonWidth) * 0.5f);
@@ -137,7 +129,7 @@ namespace fe {
                 float padding = ImGui::GetStyle().FramePadding.y * SdlController::properties.scale.second;
                 ImGui::SetCursorPos(ImVec2(padding, padding));
             
-                if (ImGui::Button("Back")) {
+                if (ImGui::Button("↩")) {
                     onClick();
                 }
             }

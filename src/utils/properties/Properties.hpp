@@ -9,7 +9,7 @@
 #include "../string/StringUtils.hpp"
 
 namespace fe {
-    using Property = std::variant<int, float, bool, std::string, ImVec4>;
+    using Property = std::variant<int, float, bool, std::string, ImVec2, ImVec4>;
 
     template <typename T>
     concept SupportedJsonType =
@@ -17,6 +17,7 @@ namespace fe {
         std::same_as<T, float> ||
         std::same_as<T, bool> ||
         std::same_as<T, std::string> ||
+        std::same_as<T, ImVec2> ||
         std::same_as<T, ImVec4>;
 
     class Properties {

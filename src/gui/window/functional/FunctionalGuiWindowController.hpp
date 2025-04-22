@@ -22,22 +22,30 @@ namespace fe {
             std::optional<GuiWindowId> process() override {
                 window->setAndDraw();
 
+                bool bindToStorageId = Application::properties.getPropertyValue<bool>(Application::ApplicationProperties::BIND_STORAGE_FLAG_KEY);
                 switch (window->action) {
-                    case FunctionalWindowAction::ENCRYPT:
+                    case FunctionalWindowAction::ENCRYPT: {
                         window->action = FunctionalWindowAction::NONE;
-                        return std::nullopt;
+
+                        bool usePerFilePassword = Application::properties.getPropertyValue<bool>(Application::ApplicationProperties::INDIVIDUAL_PASSWORD_FLAG_KEY);
+                        if (usePerFilePassword) {
+                            return GuiWindowId::FILE_PASSWORD;
+                        }
+                        
+                        return GuiWindowId::PROGRESS_BAR;
+                    }
 
                     case FunctionalWindowAction::DECTYPT:
                         window->action = FunctionalWindowAction::NONE;
-                        return std::nullopt;
+                        return GuiWindowId::PROGRESS_BAR;
 
                     case FunctionalWindowAction::TEMPORARY_OPEN:
                         window->action = FunctionalWindowAction::NONE;
-                        return std::nullopt;
+                        return GuiWindowId::PROGRESS_BAR;
 
                     case FunctionalWindowAction::PROPERTIES:
                         window->action = FunctionalWindowAction::NONE;
-                        return std::nullopt;
+                        return GuiWindowId::PROPERTIES;
 
                     case FunctionalWindowAction::BACK:
                         window->action = FunctionalWindowAction::NONE;
