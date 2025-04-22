@@ -25,9 +25,11 @@ namespace fe {
                 switch (window->action)
                 {
                     case MainWindowAction::LOGIN:
+                        window->action = MainWindowAction::NONE;
                         return GuiWindowId::LOGIN;
                     
                     case MainWindowAction::EXIT:
+                        window->action = MainWindowAction::NONE;
                         return GuiWindowId::EXIT;
 
                     default:

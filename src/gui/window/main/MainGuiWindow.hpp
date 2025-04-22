@@ -28,7 +28,7 @@ namespace fe {
 
         protected:
             void draw() override {
-                GuiUtils::centeredItemGroup(
+                GuiUtils::itemGroup(
                     {
                         std::make_shared<GuiUtils::Button>(LOGIN_BUTTON_NAME, [](){ MainGuiWindow::getInstance().action = MainWindowAction::LOGIN; }),
                         std::make_shared<GuiUtils::Button>(EXIT_BUTTON_NAME, [](){ MainGuiWindow::getInstance().action = MainWindowAction::EXIT; })

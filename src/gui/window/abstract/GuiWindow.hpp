@@ -2,9 +2,13 @@
 
 #include <string>
 
+#include <math.h>
 #include <imgui.h>
+#include <backends/imgui_impl_sdl2.h>
+#include <backends/imgui_impl_opengl3.h>
 
 #include "ImguiTheme.h"
+#include "../../sdl/SdlController.h"
 #include "../../../utils/properties/Properties.hpp"
 #include "../../../utils/properties/PropertiesLoader.hpp"
 #include "../../../utils/properties/PropertiesFileBuilder.hpp"

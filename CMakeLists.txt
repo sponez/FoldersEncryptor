@@ -42,6 +42,12 @@ set(APP_SOURCES
     src/gui/window/main/MainGuiWindow.hpp
     src/gui/window/main/MainGuiWindowController.hpp
     src/gui/window/main/MainWindowAction.hpp
+    src/gui/window/login/LoginGuiWindow.hpp
+    src/gui/window/login/LoginGuiWindowController.cpp
+    src/gui/window/login/LoginWindowAction.hpp
+    src/gui/window/functional/FunctionalGuiWindow.hpp
+    src/gui/window/functional/FunctionalGuiWindowController.hpp
+    src/gui/window/functional/FunctionalWindowAction.hpp
     
     src/selector/Selector.cpp
 

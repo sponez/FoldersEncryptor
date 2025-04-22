@@ -43,8 +43,8 @@ namespace fe {
 
                     void draw() override {
                         float buttonWidth =
-                        GuiWindow::properties.getPropertyValue<float>(GuiWindow::GuiWindowProperties::BUTTON_WIDTH_KEY)
-                        * SdlController::properties.scale.first;
+                            GuiWindow::properties.getPropertyValue<float>(GuiWindow::GuiWindowProperties::BUTTON_WIDTH_KEY)
+                            * SdlController::properties.scale.first;
     
                         float buttonHeight =
                             GuiWindow::properties.getPropertyValue<float>(GuiWindow::GuiWindowProperties::BUTTON_HEIGHT_KEY)
@@ -117,21 +117,28 @@ namespace fe {
                     }
             };
 
-            static void centeredItemGroup(const std::vector<std::shared_ptr<Item>>& items) {
-                float spacing = ImGui::GetStyle().ItemSpacing.y * SdlController::properties.scale.second;
-
+            static void itemGroup(const std::vector<std::shared_ptr<Item>>& items) {
                 float totalHeight = 0.0f;
                 for (const auto& item : items) {
                     totalHeight += item->getHeight();
                 }
             
-                totalHeight += spacing * (items.size() - 1);
+                totalHeight += ImGui::GetStyle().ItemSpacing.y * (items.size() - 1);
 
                 float startY = (ImGui::GetWindowSize().y - totalHeight) * 0.5f;
                 ImGui::SetCursorPosY(startY);
             
                 for (const auto& item : items) {
                     item->draw();
+                }
+            }
+
+            static void renderBackButton(const std::function<void()>& onClick) {
+                float padding = ImGui::GetStyle().FramePadding.y * SdlController::properties.scale.second;
+                ImGui::SetCursorPos(ImVec2(padding, padding));
+            
+                if (ImGui::Button("Back")) {
+                    onClick();
                 }
             }
 

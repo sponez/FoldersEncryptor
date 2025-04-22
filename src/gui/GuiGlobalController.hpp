@@ -9,7 +9,8 @@
 #include "window/abstract/GuiWindow.hpp"
 #include "window/abstract/GuiWindowController.hpp"
 #include "window/main/MainGuiWindowController.hpp"
-#include "window/login/LoginGuiWindowController.hpp"
+#include "window/login/LoginGuiWindowController.h"
+#include "window/functional/FunctionalGuiWindowController.hpp"
 
 namespace fe {
     class GuiGlobalController {
@@ -99,7 +100,11 @@ namespace fe {
                     case GuiWindowId::LOGIN:
                         currentWindowController = &LoginGuiWindowController::getInstance();
                         break;
-                        
+                    
+                    case GuiWindowId::FUNCTIONAL:
+                        currentWindowController = &FunctionalGuiWindowController::getInstance();
+                        break;
+
                     default:
                         break;
                 }

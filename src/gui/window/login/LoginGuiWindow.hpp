@@ -5,8 +5,9 @@
 
 #include <imgui.h>
 
-#include "../abstract/GuiWindow.hpp"
 #include "LoginWindowAction.hpp"
+#include "../abstract/GuiWindow.hpp"
+#include "../GuiUtils.hpp"
 
 namespace fe {
     class LoginGuiWindow: public GuiWindow {
@@ -15,13 +16,13 @@ namespace fe {
             inline static const std::string PASSWORD_FIELD = "Password";
             inline static const std::string OK_BUTTON_NAME = "OK";
 
-            std::array<char, 64> username = std::array<char, 64>();
-            std::array<char, 64> password = std::array<char, 64>();
-
             LoginGuiWindow() = default;
             ~LoginGuiWindow() = default;
 
         public:
+            std::array<char, 64> username = std::array<char, 64>();
+            std::array<char, 64> password = std::array<char, 64>();
+
             LoginWindowAction action = LoginWindowAction::NONE;
             static LoginGuiWindow& getInstance() {
                 static LoginGuiWindow instance;
@@ -30,7 +31,11 @@ namespace fe {
 
         protected:
             void draw() override {
-                GuiUtils::centeredItemGroup(
+                GuiUtils::renderBackButton(
+                    []() { LoginGuiWindow::getInstance().action = LoginWindowAction::BACK; }
+                );
+
+                GuiUtils::itemGroup(
                     {
                         std::make_shared<GuiUtils::InputText>(USERNAME_FIELD, username.data(), username.size()),
                         std::make_shared<GuiUtils::InputText>(PASSWORD_FIELD, password.data(), password.size()),

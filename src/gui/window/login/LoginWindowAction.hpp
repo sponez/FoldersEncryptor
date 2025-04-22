@@ -3,6 +3,7 @@
 namespace fe {
     enum class LoginWindowAction {
         NONE,
-        HASHING
+        HASHING,
+        BACK
     };
 }
