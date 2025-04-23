@@ -31,13 +31,13 @@ namespace fe {
                     case PropertiesWindowAction::APPLY:
                         window->action = PropertiesWindowAction::NONE;
                         saveProperties();
-                        return std::nullopt;
+                        return GuiWindowId::MAIN;
                     
                     case PropertiesWindowAction::BACK:
                     case PropertiesWindowAction::CANCEL:
                         window->action = PropertiesWindowAction::NONE;
                         resetProperties();
-                        return GuiWindowId::FUNCTIONAL;
+                        return GuiWindowId::MAIN;
 
                     case PropertiesWindowAction::RESTORE:
                         window->action = PropertiesWindowAction::NONE;
@@ -52,6 +52,7 @@ namespace fe {
             static void loadProperties();
             static void saveProperties();
             static void resetProperties() {
+                PropertiesGuiWindow::useAuthorization = std::nullopt;
                 PropertiesGuiWindow::usePerFilePassword = std::nullopt;
                 PropertiesGuiWindow::bindToStorageId = std::nullopt;
             }

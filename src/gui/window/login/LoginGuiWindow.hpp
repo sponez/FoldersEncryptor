@@ -15,7 +15,6 @@ namespace fe {
             inline static const std::u8string USERNAME_FIELD = u8"Username";
             inline static const std::u8string PASSWORD_FIELD = u8"Password";
             inline static const std::u8string OK_BUTTON_NAME = u8"OK";
-            inline static const std::u8string SKIP_BUTTON_NAME = u8"Skip";
 
             LoginGuiWindow() = default;
             ~LoginGuiWindow() = default;
@@ -40,8 +39,7 @@ namespace fe {
                     {
                         std::make_shared<GuiUtils::InputText>(USERNAME_FIELD, username.data(), username.size()),
                         std::make_shared<GuiUtils::InputText>(PASSWORD_FIELD, password.data(), password.size()),
-                        std::make_shared<GuiUtils::Button>(OK_BUTTON_NAME, []() {LoginGuiWindow::getInstance().action = LoginWindowAction::HASHING;}),
-                        std::make_shared<GuiUtils::Button>(SKIP_BUTTON_NAME, []() {LoginGuiWindow::getInstance().action = LoginWindowAction::SKIP;})
+                        std::make_shared<GuiUtils::Button>(OK_BUTTON_NAME, []() {LoginGuiWindow::getInstance().action = LoginWindowAction::HASHING;})
                     }
                 );
             }

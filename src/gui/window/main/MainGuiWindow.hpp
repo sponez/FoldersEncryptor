@@ -13,7 +13,8 @@
 namespace fe {
     class MainGuiWindow: public GuiWindow {
         private:
-            inline static const std::u8string LOGIN_BUTTON_NAME = u8"Login";
+            inline static const std::u8string ENTER_BUTTON_NAME = u8"Enter";
+            inline static const std::u8string PROPERTIES_BUTTON_NAME = u8"Properties";
             inline static const std::u8string EXIT_BUTTON_NAME = u8"Exit";
 
             MainGuiWindow() = default;
@@ -30,10 +31,29 @@ namespace fe {
             void draw() override {
                 GuiUtils::itemGroup(
                     {
-                        std::make_shared<GuiUtils::Button>(LOGIN_BUTTON_NAME, [](){ MainGuiWindow::getInstance().action = MainWindowAction::LOGIN; }),
-                        std::make_shared<GuiUtils::Button>(EXIT_BUTTON_NAME, [](){ MainGuiWindow::getInstance().action = MainWindowAction::EXIT; })
+                        std::make_shared<GuiUtils::Button>(
+                            ENTER_BUTTON_NAME,
+                            [&](){
+                                if (isUsingAuthorization()) {
+                                    action = MainWindowAction::LOGIN;
+                                } else {
+                                    action = MainWindowAction::FUNCTIONAL;
+                                }
+                            }
+                        ),
+                        std::make_shared<GuiUtils::Button>(
+                            PROPERTIES_BUTTON_NAME,
+                            [&]() { action = MainWindowAction::PROPERTIES; }
+                        ),
+                        std::make_shared<GuiUtils::Button>(
+                            EXIT_BUTTON_NAME,
+                            [&](){ action = MainWindowAction::EXIT; }
+                        )
                     }
                 );
             }
+        
+        private:
+            bool isUsingAuthorization();
     };
 }

@@ -6,7 +6,6 @@ namespace fe {
         ENCRYPT,
         DECTYPT,
         TEMPORARY_OPEN,
-        PROPERTIES,
         BACK
     };
 }

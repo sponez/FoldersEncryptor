@@ -46,6 +46,7 @@ set(APP_SOURCES
     src/gui/window/abstract/GuiWindow.hpp
     src/gui/window/abstract/GuiWindowController.hpp
     src/gui/window/main/MainGuiWindow.hpp
+    src/gui/window/main/MainGuiWindow.cpp
     src/gui/window/main/MainGuiWindowController.hpp
     src/gui/window/main/MainWindowAction.hpp
     src/gui/window/login/LoginGuiWindow.hpp

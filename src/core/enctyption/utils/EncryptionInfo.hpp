@@ -8,13 +8,13 @@
 
 namespace fe {
     struct EncryptionInfo {
-        bool main;
+        bool authorization;
         bool filePasswordFlag;
         bool usbFlag;
 
         uint8_t toByte() const {
             uint8_t result = 0;
-            result |= main             ? (1 << 0) : 0;
+            result |= authorization    ? (1 << 0) : 0;
             result |= filePasswordFlag ? (1 << 1) : 0;
             result |= usbFlag          ? (1 << 2) : 0;
             return result;
@@ -22,7 +22,7 @@ namespace fe {
 
         static EncryptionInfo fromByte(uint8_t byte) {
             EncryptionInfo info;
-            info.main             = byte & (1 << 0);
+            info.authorization    = byte & (1 << 0);
             info.filePasswordFlag = byte & (1 << 1);
             info.usbFlag          = byte & (1 << 2);
             return info;

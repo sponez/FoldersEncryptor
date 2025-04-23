@@ -15,6 +15,9 @@ namespace fe {
                 public:
                     inline static const std::u8string FILE = u8".properties";
 
+                    inline static const std::u8string USE_AUTHORIZATION_FLAG_KEY = u8"useAuthorization";
+                    inline static const bool DEFAULT_USE_AUTHORIZATION_FLAG_VALUE = false;
+
                     inline static const std::u8string INDIVIDUAL_PASSWORD_FLAG_KEY = u8"individualPasswordFlag";
                     inline static const bool DEFAULT_INDIVIDUAL_PASSWORD_FLAG_VALUE = false;
 
@@ -42,7 +45,8 @@ namespace fe {
             static void saveProperties() {
                 std::u8string jsonFile =
                     PropertiesFileBuilder(&properties)
-                        .save<bool>(Application::ApplicationProperties::INDIVIDUAL_PASSWORD_FLAG_KEY)
+                        .save<bool>(Application::ApplicationProperties::USE_AUTHORIZATION_FLAG_KEY)
+                        ->save<bool>(Application::ApplicationProperties::INDIVIDUAL_PASSWORD_FLAG_KEY)
                         ->save<bool>(Application::ApplicationProperties::BIND_STORAGE_FLAG_KEY)
                         ->save<int>(Application::ApplicationProperties::THREAD_COUNT_KEY)
                         ->save<int>(Application::ApplicationProperties::BUFFER_SIZE_KEY)
@@ -58,6 +62,9 @@ namespace fe {
                 PropertiesLoader loader(Application::ApplicationProperties::FILE, &properties);
 
                 loader.loadOrDefault<bool>(
+                    Application::ApplicationProperties::USE_AUTHORIZATION_FLAG_KEY,
+                    Application::ApplicationProperties::DEFAULT_USE_AUTHORIZATION_FLAG_VALUE
+                )->loadOrDefault<bool>(
                     Application::ApplicationProperties::INDIVIDUAL_PASSWORD_FLAG_KEY,
                     Application::ApplicationProperties::DEFAULT_INDIVIDUAL_PASSWORD_FLAG_VALUE
                 )->loadOrDefault<bool>(

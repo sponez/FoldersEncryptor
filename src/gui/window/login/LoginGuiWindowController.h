@@ -32,11 +32,9 @@ namespace fe {
                     case LoginWindowAction::HASHING: {
                         window->action = LoginWindowAction::NONE;
 
-                        if (window->username.empty() || window->password.empty()) {
+                        if (window->username[0] == '\0' || window->password[0] == '\0') {
                             return std::nullopt;
                         }
-
-                        ApplicationRegistry::push(ApplicationRegistry::Key::AUTHORIZATION_OK, true);
 
                         saveProperties(
                             StringUtils::hashString(std::u8string(window->username.begin(), window->username.end())),
@@ -48,11 +46,6 @@ namespace fe {
 
                         return GuiWindowId::FUNCTIONAL;
                     }
-
-                    case LoginWindowAction::SKIP:
-                        window->action = LoginWindowAction::NONE;
-                        ApplicationRegistry::push(ApplicationRegistry::Key::AUTHORIZATION_OK, false);
-                        return GuiWindowId::FUNCTIONAL;
 
                     case LoginWindowAction::BACK:
                         window->action = LoginWindowAction::NONE;

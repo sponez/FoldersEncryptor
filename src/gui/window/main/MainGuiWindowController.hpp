@@ -28,6 +28,14 @@ namespace fe {
                         window->action = MainWindowAction::NONE;
                         return GuiWindowId::LOGIN;
                     
+                    case MainWindowAction::FUNCTIONAL:
+                        window->action = MainWindowAction::NONE;
+                        return GuiWindowId::FUNCTIONAL;
+
+                    case MainWindowAction::PROPERTIES:
+                        window->action = MainWindowAction::NONE;
+                        return GuiWindowId::PROPERTIES;
+
                     case MainWindowAction::EXIT:
                         window->action = MainWindowAction::NONE;
                         return GuiWindowId::EXIT;

@@ -22,7 +22,6 @@ namespace fe {
 
             inline static const std::u8string DERYPT_BUTTON_NAME = u8"Decrypt";
             inline static const std::u8string TEMPORARY_OPEN_BUTTON_NAME = u8"Temporary open";
-            inline static const std::u8string PROPERTIES_BUTTON_NAME = u8"Properties";
 
             FunctionalGuiWindow() = default;
             ~FunctionalGuiWindow() = default;
@@ -53,10 +52,6 @@ namespace fe {
                         std::make_shared<GuiUtils::Button>(
                             TEMPORARY_OPEN_BUTTON_NAME,
                             [&]() { temporaryOpenButton(); }
-                        ),
-                        std::make_shared<GuiUtils::Button>(
-                            PROPERTIES_BUTTON_NAME,
-                            [&]() { action = FunctionalWindowAction::PROPERTIES; }
                         )
                     }
                 );

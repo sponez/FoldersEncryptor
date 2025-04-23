@@ -31,6 +31,7 @@ namespace fe {
                 return instance;
             }
 
+            inline static std::optional<bool> useAuthorization = std::nullopt;
             inline static std::optional<bool> usePerFilePassword = std::nullopt;
             inline static std::optional<bool> bindToStorageId = std::nullopt;
         
@@ -53,7 +54,10 @@ namespace fe {
                     ImGui::EndTabBar();
                 }
 
-                GuiUtils::Button(APPLY_BUTTON_NAME, []() { PropertiesGuiWindow::getInstance().action = PropertiesWindowAction::APPLY; }).draw();
+                GuiUtils::Button(
+                    APPLY_BUTTON_NAME,
+                    [&]() { action = PropertiesWindowAction::APPLY; }
+                ).draw();
             }
 
         private:
@@ -61,6 +65,11 @@ namespace fe {
                 ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(8, 4));
                 ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(6, 3));
                 ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 4.0f);
+
+                ImGui::Checkbox("Use authorization", &useAuthorization.value());
+                if (ImGui::IsItemHovered()) {
+                    ImGui::SetTooltip("Use username and password to protect your files.");
+                }
 
                 ImGui::Checkbox("Use individual password for each file", &usePerFilePassword.value());
                 if (ImGui::IsItemHovered()) {

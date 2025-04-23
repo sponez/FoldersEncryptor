@@ -6,6 +6,10 @@
 
 namespace fe {
     void PropertiesGuiWindowController::loadProperties() {
+        if (!PropertiesGuiWindow::useAuthorization) {
+            PropertiesGuiWindow::useAuthorization =
+                Application::properties.getPropertyValue<bool>(Application::ApplicationProperties::USE_AUTHORIZATION_FLAG_KEY);
+        }
         if (!PropertiesGuiWindow::usePerFilePassword) {
             PropertiesGuiWindow::usePerFilePassword =
                 Application::properties.getPropertyValue<bool>(Application::ApplicationProperties::INDIVIDUAL_PASSWORD_FLAG_KEY);
@@ -17,6 +21,9 @@ namespace fe {
     }
 
     void PropertiesGuiWindowController::saveProperties() {
+        Application::properties.setPropertyValue<bool>(
+            Application::ApplicationProperties::USE_AUTHORIZATION_FLAG_KEY, PropertiesGuiWindow::useAuthorization.value()
+        );
         Application::properties.setPropertyValue<bool>(
             Application::ApplicationProperties::INDIVIDUAL_PASSWORD_FLAG_KEY, PropertiesGuiWindow::usePerFilePassword.value()
         );

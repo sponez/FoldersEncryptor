@@ -22,7 +22,6 @@ namespace fe {
             enum class Key {
                 AUTHORIZATION_OK,
                 CURRENT_ACTION,
-                DECRYPTION_INFO,
                 FILE_PASSWORD,
                 FILE_TO_DECRYPT,
                 FILE_TO_ENCRYPT,

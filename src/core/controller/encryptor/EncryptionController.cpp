@@ -14,6 +14,7 @@ namespace fe {
 
         std::optional<std::u8string> username;
         std::optional<std::u8string> password;
+
         if (*ApplicationRegistry::pull<bool>(ApplicationRegistry::Key::AUTHORIZATION_OK)) {
             username = Application::properties.getPropertyValue<std::u8string>(Application::ApplicationProperties::USER_KEY);
             password =  Application::properties.getPropertyValue<std::u8string>(Application::ApplicationProperties::PASSWORD_KEY);

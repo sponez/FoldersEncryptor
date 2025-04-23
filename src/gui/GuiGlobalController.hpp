@@ -90,8 +90,7 @@ namespace fe {
             }
 
             static void switchWindow(GuiWindowId id) {
-                switch (id)
-                {
+                switch (id) {
                     case GuiWindowId::EXIT:
                         running = false;
                         break;

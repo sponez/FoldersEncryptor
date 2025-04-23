@@ -12,8 +12,11 @@ namespace fe {
 
                 ApplicationRegistry::push(ApplicationRegistry::Key::CURRENT_ACTION, FunctionalWindowAction::ENCRYPT);
 
+                bool useAuthorization =  Application::properties.getPropertyValue<bool>(Application::ApplicationProperties::USE_AUTHORIZATION_FLAG_KEY);
                 bool usePerFilePassword = Application::properties.getPropertyValue<bool>(Application::ApplicationProperties::INDIVIDUAL_PASSWORD_FLAG_KEY);
                 bool bindToStorageId = Application::properties.getPropertyValue<bool>(Application::ApplicationProperties::BIND_STORAGE_FLAG_KEY);
+            
+                ApplicationRegistry::push(ApplicationRegistry::Key::AUTHORIZATION_OK, useAuthorization);
 
                 if (bindToStorageId) {
                     ApplicationRegistry::push(
@@ -35,7 +38,7 @@ namespace fe {
                 ApplicationRegistry::push(ApplicationRegistry::Key::CURRENT_ACTION, FunctionalWindowAction::DECTYPT);
 
                 auto decryptionInfo = pullEncryptionInfo();
-                ApplicationRegistry::push(ApplicationRegistry::Key::DECRYPTION_INFO, decryptionInfo);
+                ApplicationRegistry::push(ApplicationRegistry::Key::AUTHORIZATION_OK, decryptionInfo.authorization);
 
                 if (decryptionInfo.usbFlag) {
                     ApplicationRegistry::push(
@@ -57,7 +60,7 @@ namespace fe {
                 ApplicationRegistry::push(ApplicationRegistry::Key::CURRENT_ACTION, FunctionalWindowAction::TEMPORARY_OPEN);
 
                 auto decryptionInfo = pullEncryptionInfo();
-                ApplicationRegistry::push(ApplicationRegistry::Key::DECRYPTION_INFO, decryptionInfo);
+                ApplicationRegistry::push(ApplicationRegistry::Key::AUTHORIZATION_OK, decryptionInfo.authorization);
 
                 if (decryptionInfo.usbFlag) {
                     ApplicationRegistry::push(
@@ -72,10 +75,6 @@ namespace fe {
 
                 return GuiWindowId::PROGRESS_BAR;
             }
-
-            case FunctionalWindowAction::PROPERTIES:
-                window->action = FunctionalWindowAction::NONE;
-                return GuiWindowId::PROPERTIES;
 
             case FunctionalWindowAction::BACK:
                 window->action = FunctionalWindowAction::NONE;

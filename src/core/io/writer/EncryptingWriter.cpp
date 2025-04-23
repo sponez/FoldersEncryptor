@@ -6,7 +6,7 @@
 namespace fe {
     void EncryptingWriter::writeEncryptionInfo() {
         EncryptionInfo info;
-        info.main = *ApplicationRegistry::pull<bool>(ApplicationRegistry::Key::AUTHORIZATION_OK);
+        info.authorization = *ApplicationRegistry::pull<bool>(ApplicationRegistry::Key::AUTHORIZATION_OK);
         info.filePasswordFlag = ApplicationRegistry::containsAny(ApplicationRegistry::Key::FILE_PASSWORD);
         info.usbFlag = ApplicationRegistry::containsAny(ApplicationRegistry::Key::USB_ID);
         
