@@ -51,8 +51,8 @@ namespace fe {
                     properties->setPropertyValue<int>(key, jsonValue.GetInt());
                 } else if constexpr (std::same_as<T, bool>) {
                     properties->setPropertyValue<bool>(key, jsonValue.GetBool());
-                } else if constexpr (std::same_as<T, std::string>) {
-                    properties->setPropertyValue<std::string>(key, jsonValue.GetString());
+                } else if constexpr (std::same_as<T, std::u8string>) {
+                    properties->setPropertyValue<std::u8string>(key, StringUtils::u8string(jsonValue.GetString()));
                 } else if constexpr (std::same_as<T, float>) {
                     properties->setPropertyValue<float>(key, jsonValue.GetFloat());
                 } else if constexpr (std::same_as<T, ImVec2>) {

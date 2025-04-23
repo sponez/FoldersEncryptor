@@ -14,15 +14,15 @@
 namespace fe {
     class FunctionalGuiWindow: public GuiWindow {
         private:
-            inline static const std::string ENRYPT_BUTTON_NAME = "Enctypt";
+            inline static const std::u8string ENCRYPT_BUTTON_NAME = u8"Encrypt";
 
-            inline static const std::string POPUP_CHOOSE_TYPE_NAME = "Choose type";
-            inline static const std::string FILE_POPUP_OPTION_NAME = "File(s)";
-            inline static const std::string FOLDER_POPUP_OPTION_NAME = "Folder";
+            inline static const std::u8string POPUP_CHOOSE_TYPE_NAME = u8"Choose type";
+            inline static const std::u8string FILE_POPUP_OPTION_NAME = u8"File(s)";
+            inline static const std::u8string FOLDER_POPUP_OPTION_NAME = u8"Folder";
 
-            inline static const std::string DERYPT_BUTTON_NAME = "Decrypt";
-            inline static const std::string TEMPORARY_OPEN_BUTTON_NAME = "Temporary open";
-            inline static const std::string PROPERTIES_BUTTON_NAME = "Properties";
+            inline static const std::u8string DERYPT_BUTTON_NAME = u8"Decrypt";
+            inline static const std::u8string TEMPORARY_OPEN_BUTTON_NAME = u8"Temporary open";
+            inline static const std::u8string PROPERTIES_BUTTON_NAME = u8"Properties";
 
             FunctionalGuiWindow() = default;
             ~FunctionalGuiWindow() = default;
@@ -37,34 +37,26 @@ namespace fe {
         protected:
             void draw() override {
                 GuiUtils::renderBackButton(
-                    []() { FunctionalGuiWindow::getInstance().action = FunctionalWindowAction::BACK; }
+                    [&]() { action = FunctionalWindowAction::BACK; }
                 );
 
                 GuiUtils::itemGroup(
                     {
                         std::make_shared<GuiUtils::Button>(
-                            ENRYPT_BUTTON_NAME,
-                            [&]() {
-                                ImGui::OpenPopup(POPUP_CHOOSE_TYPE_NAME.c_str());
-                            }
+                            ENCRYPT_BUTTON_NAME,
+                            [&]() { ImGui::OpenPopup(StringUtils::string(POPUP_CHOOSE_TYPE_NAME).c_str()); }
                         ),
                         std::make_shared<GuiUtils::Button>(
                             DERYPT_BUTTON_NAME,
-                            [&]() {
-                                decryptButton();
-                            }
+                            [&]() { decryptButton(); }
                         ),
                         std::make_shared<GuiUtils::Button>(
                             TEMPORARY_OPEN_BUTTON_NAME,
-                            [&]() {
-                                temporaryOpenButton();
-                            }
+                            [&]() { temporaryOpenButton(); }
                         ),
                         std::make_shared<GuiUtils::Button>(
                             PROPERTIES_BUTTON_NAME,
-                            []() {
-                                FunctionalGuiWindow::getInstance().action = FunctionalWindowAction::PROPERTIES;
-                            }
+                            [&]() { action = FunctionalWindowAction::PROPERTIES; }
                         )
                     }
                 );
@@ -74,19 +66,23 @@ namespace fe {
 
         private:
             void fileOrFolderPopUp() {
-                if (ImGui::BeginPopup(POPUP_CHOOSE_TYPE_NAME.c_str())) {
-                    if (ImGui::MenuItem(FILE_POPUP_OPTION_NAME.c_str())) {
+                if (ImGui::BeginPopup(StringUtils::string(POPUP_CHOOSE_TYPE_NAME).c_str())) {
+                    if (ImGui::MenuItem(StringUtils::string(FILE_POPUP_OPTION_NAME).c_str())) {
                         auto files = Selector::selectMultipleFiles();
                         if (files) {
-                            ApplicationRegistry::filesToEncrypt = *files;
+                            if (files->size() == 1) {
+                                ApplicationRegistry::push(ApplicationRegistry::Key::FILE_TO_ENCRYPT, *files);
+                            } else {
+                                ApplicationRegistry::push(ApplicationRegistry::Key::FILES_TO_ENCRYPT, *files);
+                            }
                         }
                         ImGui::CloseCurrentPopup();
                     }
             
-                    if (ImGui::MenuItem(FOLDER_POPUP_OPTION_NAME.c_str())) {
+                    if (ImGui::MenuItem(StringUtils::string(FOLDER_POPUP_OPTION_NAME).c_str())) {
                         auto folder = Selector::selectFolder();
                         if (folder) {
-                            ApplicationRegistry::filesToEncrypt = *folder;
+                            ApplicationRegistry::push(ApplicationRegistry::Key::FOLDER_TO_ENCRYPT, *folder);
                         }
                         ImGui::CloseCurrentPopup();
                     }
@@ -94,21 +90,23 @@ namespace fe {
                     ImGui::EndPopup();
                 }
 
-                if (!ApplicationRegistry::filesToEncrypt.empty()) {
+                if (ApplicationRegistry::containsAny(ApplicationRegistry::Key::FILES_TO_ENCRYPT, ApplicationRegistry::Key::FOLDER_TO_ENCRYPT)) {
                     FunctionalGuiWindow::getInstance().action = FunctionalWindowAction::ENCRYPT;
                 }
             }
 
             void decryptButton() {
-                ApplicationRegistry::fileToDecrypt = Selector::selectFeFile();
-                if (ApplicationRegistry::fileToDecrypt) {
+                auto file = Selector::selectFeFile();
+                if (file) {
+                    ApplicationRegistry::push(ApplicationRegistry::Key::FILE_TO_DECRYPT, *file);
                     FunctionalGuiWindow::getInstance().action = FunctionalWindowAction::DECTYPT;
                 }
             }
 
             void temporaryOpenButton() {
-                ApplicationRegistry::fileToDecrypt = Selector::selectFeFile();
-                if (ApplicationRegistry::fileToDecrypt) {
+                auto file = Selector::selectFeFile();
+                if (file) {
+                    ApplicationRegistry::push(ApplicationRegistry::Key::FILE_TO_DECRYPT, *file);
                     FunctionalGuiWindow::getInstance().action = FunctionalWindowAction::TEMPORARY_OPEN;
                 }
             }

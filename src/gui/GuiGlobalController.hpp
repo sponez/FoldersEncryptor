@@ -12,6 +12,8 @@
 #include "window/login/LoginGuiWindowController.h"
 #include "window/functional/FunctionalGuiWindowController.hpp"
 #include "window/properties/PropertiesGuiWindowController.hpp"
+#include "window/password/FilePasswordGuiWindowController.hpp"
+#include "window/progressbar/ProgressBarGuiWindowController.hpp"
 
 namespace fe {
     class GuiGlobalController {
@@ -108,6 +110,14 @@ namespace fe {
                     
                     case GuiWindowId::PROPERTIES:
                         currentWindowController = &PropertiesGuiWindowController::getInstance();
+                        break;
+                    
+                    case GuiWindowId::FILE_PASSWORD:
+                        currentWindowController = &FilePasswordGuiWindowController::getInstance();
+                        break;
+
+                    case GuiWindowId::PROGRESS_BAR:
+                        currentWindowController = &ProgressBarGuiWindowController::getInstance();
                         break;
 
                     default:

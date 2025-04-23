@@ -50,7 +50,7 @@ namespace fe {
                     inline static const float DEFAULT_INPUT_WIDTH_VALUE = 200.0f;
 
                     inline static const std::u8string FONT_KEY = u8"font";
-                    inline static const std::string DEFAULT_FONT_VALUE = "";
+                    inline static const std::u8string DEFAULT_FONT_VALUE = u8"";
 
                     inline static const std::u8string FONT_SIZE_KEY = u8"fontSize";
                     inline static const float DEFAULT_FONT_SIZE_VALUE = 16.0f;
@@ -80,7 +80,7 @@ namespace fe {
             }
 
             static void saveProperties() {
-                std::string jsonFile =
+                std::u8string jsonFile =
                     PropertiesFileBuilder(&properties)
                         .save<ImVec2>(GuiWindow::GuiWindowProperties::BUTTON_SIZE_KEY)
                         ->save<ImVec2>(GuiWindow::GuiWindowProperties::SPACE_KEY)
@@ -91,7 +91,7 @@ namespace fe {
                         ->save<float>(GuiWindow::GuiWindowProperties::FRAME_BORDER_SIZE_KEY)
                         ->save<ImVec4>(GuiWindow::GuiWindowProperties::FRAME_BORDER_COLOR_KEY)
                         ->save<float>(GuiWindow::GuiWindowProperties::INPUT_WIDTH_KEY)
-                        ->save<std::string>(GuiWindow::GuiWindowProperties::FONT_KEY)
+                        ->save<std::u8string>(GuiWindow::GuiWindowProperties::FONT_KEY)
                         ->save<float>(GuiWindow::GuiWindowProperties::FONT_SIZE_KEY)
                         ->save<int>(GuiWindow::GuiWindowProperties::THEME_KEY)
                         ->build();
@@ -99,7 +99,7 @@ namespace fe {
                 std::filesystem::path savePath = StringUtils::path(GuiWindow::GuiWindowProperties::FILE);
                 std::filesystem::create_directory(savePath.parent_path());
                 std::ofstream out(savePath);
-                out << jsonFile;
+                out << StringUtils::string(jsonFile);
                 out.close();
             }
 
@@ -133,7 +133,7 @@ namespace fe {
                 )->loadOrDefault<float>(
                     GuiWindow::GuiWindowProperties::INPUT_WIDTH_KEY,
                     GuiWindow::GuiWindowProperties::DEFAULT_INPUT_WIDTH_VALUE
-                )->loadOrDefault<std::string>(
+                )->loadOrDefault<std::u8string>(
                     GuiWindow::GuiWindowProperties::FONT_KEY,
                     GuiWindow::GuiWindowProperties::DEFAULT_FONT_VALUE
                 )->loadOrDefault<float>(
@@ -190,7 +190,7 @@ namespace fe {
 
             static void setFont() {
                 ImGuiIO& io = ImGui::GetIO();
-                std::string fontPath = properties.getPropertyValue<std::string>(GuiWindow::GuiWindowProperties::FONT_KEY);
+                std::u8string fontPath = properties.getPropertyValue<std::u8string>(GuiWindow::GuiWindowProperties::FONT_KEY);
         
                 float scaleAvg = std::sqrt(SdlController::SdlProperties::scale.first * SdlController::SdlProperties::scale.second);
                 float fontSize =
@@ -207,7 +207,7 @@ namespace fe {
 
                 if (!fontPath.empty()) {
                     io.Fonts->AddFontFromFileTTF(
-                        fontPath.c_str(),
+                        StringUtils::string(fontPath).c_str(),
                         fontSize,
                         nullptr,
                         ranges.Data

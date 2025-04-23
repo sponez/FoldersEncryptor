@@ -19,7 +19,7 @@ namespace fe {
         return driveType == DRIVE_REMOVABLE;
     }
 
-    std::optional<std::string> getStorageDeviceId() {
+    std::optional<std::u8string> getStorageDeviceId() {
         char path[MAX_PATH];
         GetModuleFileNameA(NULL, path, MAX_PATH);
 
@@ -65,7 +65,7 @@ namespace fe {
             return std::nullopt;
         }
 
-        return std::string(reinterpret_cast<char*>(buffer + desc->SerialNumberOffset));
+        return StringUtils::u8string(std::string(reinterpret_cast<char*>(buffer + desc->SerialNumberOffset)));
     }
 }
 #endif

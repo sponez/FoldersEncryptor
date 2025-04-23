@@ -8,6 +8,7 @@
 #include "LoginWindowAction.hpp"
 #include "../GuiWindowId.hpp"
 #include "../abstract/GuiWindowController.hpp"
+#include "../../../utils/string/StringUtils.hpp"
 
 namespace fe {
     class LoginGuiWindowController: public GuiWindowController {
@@ -16,22 +17,6 @@ namespace fe {
 
             LoginGuiWindowController() = default;
             ~LoginGuiWindowController() = default;
-
-            std::string hashString(std::array<char, 64> input) {
-                unsigned char hash[crypto_generichash_BYTES];
-                crypto_generichash(
-                    hash, sizeof(hash),
-                    reinterpret_cast<const unsigned char*>(input.data()), input.size(),
-                    nullptr, 0
-                );
-            
-                std::stringstream ss;
-                for (size_t i = 0; i < sizeof(hash); ++i) {
-                    ss << std::hex << std::setw(2) << std::setfill('0') << (int)hash[i];
-                }
-
-                return ss.str();
-            }
 
         public:
             static LoginGuiWindowController& getInstance() {
@@ -46,7 +31,10 @@ namespace fe {
                     case LoginWindowAction::HASHING: {
                         window->action = LoginWindowAction::NONE;
 
-                        saveProperties(hashString(window->username), hashString(window->password));
+                        saveProperties(
+                            StringUtils::hashString(std::u8string(window->username.begin(), window->username.end())),
+                            StringUtils::hashString(std::u8string(window->password.begin(), window->password.end()))
+                        );
 
                         sodium_memzero(window->username.data(), window->username.size());
                         sodium_memzero(window->password.data(), window->password.size());
@@ -63,6 +51,6 @@ namespace fe {
             }
 
         private:
-            static void saveProperties(std::string usernameHash, std::string passwordHash);
+            static void saveProperties(std::u8string usernameHash, std::u8string passwordHash);
     };
 }

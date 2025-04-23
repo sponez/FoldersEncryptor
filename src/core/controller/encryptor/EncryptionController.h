@@ -15,13 +15,9 @@ namespace fe {
     class EncryptionController {
     public:        
         static void encrypt(
-            const std::string outputFilename,
+            const std::u8string outputFilename,
             const std::filesystem::path rootPath,
-            const std::vector<std::filesystem::path>& filesPaths,
-            std::array<char, 256>& password,
-            const std::size_t& bufferSize,
-            const std::size_t& threadCount,
-            std::atomic<std::size_t>* bytesProcessed
+            const std::vector<std::filesystem::path>& filesPaths
         );
 
     private:

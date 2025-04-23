@@ -14,12 +14,12 @@
 namespace fe {
     class PropertiesGuiWindow: public GuiWindow {
         private:
-            inline static const std::string SYSTEM_TAB = "System";
-            inline static const std::string APPEARANCE_TAB = "Appearance";
+            inline static const std::u8string SYSTEM_TAB = u8"System";
+            inline static const std::u8string APPEARANCE_TAB = u8"Appearance";
 
-            inline static const std::string APPLY_BUTTON_NAME = "Apply";
-            inline static const std::string CANCEL_BUTTON_NAME = "Cancel";
-            inline static const std::string RESTORE_DEFAULTS_BUTTON_NAME = "Restore defaults";
+            inline static const std::u8string APPLY_BUTTON_NAME = u8"Apply";
+            inline static const std::u8string CANCEL_BUTTON_NAME = u8"Cancel";
+            inline static const std::u8string RESTORE_DEFAULTS_BUTTON_NAME = u8"Restore defaults";
 
             PropertiesGuiWindow() = default;
             ~PropertiesGuiWindow() = default;
@@ -41,12 +41,12 @@ namespace fe {
                 );
 
                 if (ImGui::BeginTabBar("SettingsTabs")) {
-                    if (ImGui::BeginTabItem(SYSTEM_TAB.c_str())) {
+                    if (ImGui::BeginTabItem(StringUtils::string(SYSTEM_TAB).c_str())) {
                         systemTab();
                         ImGui::EndTabItem();
                     }
         
-                    if (ImGui::BeginTabItem(APPEARANCE_TAB.c_str())) {
+                    if (ImGui::BeginTabItem(StringUtils::string(APPEARANCE_TAB).c_str())) {
                         appearanceTab();
                         ImGui::EndTabItem();
                     }

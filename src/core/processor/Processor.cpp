@@ -9,60 +9,38 @@
 
 namespace fe {
     void Processor::processEncryptOption(
-        std::string outputFilename,
+        std::u8string outputFilename,
         std::filesystem::path rootPath,
-        const std::vector<std::filesystem::path>& filesPaths,
-        std::array<char, 256>& password,
-        const std::size_t& bufferSize,
-        const std::size_t& threadCount,
-        std::atomic<std::size_t>* bytesProcessed
+        const std::vector<std::filesystem::path>& filesPaths
     ) {
         EncryptionController::encrypt(
             outputFilename,
             rootPath,
-            filesPaths,
-            password,
-            bufferSize,
-            threadCount,
-            bytesProcessed
+            filesPaths
         );
 
         for (auto path: filesPaths) {
-            secureDelete(path, bufferSize);
+            secureDelete(path);
         }
     }
 
     void Processor::processDecryptOption(
         std::filesystem::path outputPath,
-        std::filesystem::path decryptedFilePath,
-        std::array<char, 256>& password,
-        const std::size_t& threadCount,
-        std::atomic<std::size_t>* bytesProcessed
+        std::filesystem::path decryptedFilePath
     ) {
         DecryptionController::decrypt(
             outputPath,
-            decryptedFilePath,
-            password,
-            threadCount,
-            bytesProcessed
+            decryptedFilePath
         );
 
         std::filesystem::remove_all(decryptedFilePath);
     }
 
-    void Processor::processTemporaryDecryptOption(
-        std::filesystem::path decryptedFilePath,
-        std::array<char, 256>& password,
-        const std::size_t& threadCount,
-        std::atomic<std::size_t>* bytesProcessed
-    ) {
+    void Processor::processTemporaryDecryptOption(std::filesystem::path decryptedFilePath) {
         std::filesystem::path tempDir = createTemporaryDirectory();
         DecryptionController::decrypt(
             tempDir,
-            decryptedFilePath,
-            password,
-            threadCount,
-            bytesProcessed
+            decryptedFilePath
         );
 
         ExplorerTool::openPathInExplorer(tempDir);
@@ -72,14 +50,14 @@ namespace fe {
         std::filesystem::remove_all(tempDir);
     }
 
-    void Processor::secureDelete(const std::filesystem::path& path, const std::size_t& bufferSize) {
+    void Processor::secureDelete(const std::filesystem::path& path) {
         ExplorerTool::removeReadOnlyAttribute(path);
 
         if (!std::filesystem::exists(path) || !std::filesystem::is_regular_file(path)) {
             return;
         }
 
-        std::fstream file(path, std::ios::in | std::ios::out | std::ios::binary);
+        std::ofstream file(path);
         file.close();
         std::filesystem::remove_all(path);
     }

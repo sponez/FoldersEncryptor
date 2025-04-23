@@ -3,7 +3,9 @@
 #include <optional>
 #include <string>
 
+#include "../string/StringUtils.hpp"
+
 namespace fe {
     bool isRunningFromRemovableMedia();
-    std::optional<std::string> getStorageDeviceId();
+    std::optional<std::u8string> getStorageDeviceId();
 }

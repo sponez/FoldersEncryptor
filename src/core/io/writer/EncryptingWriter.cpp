@@ -1,6 +1,6 @@
 #include "EncryptingWriter.h"
 
-#include <iostream>
+#include "../../../application/ApplicationRegistry.hpp"
 
 namespace fe {
     void EncryptingWriter::writeSalt(const unsigned char* salt) {
@@ -102,7 +102,7 @@ namespace fe {
             SerializedChunk serialized;
             while (queueToWrite.pop(serialized)) {
                 synchronizedWrite(serialized);
-                bytesProcessed->fetch_add(serialized.size());
+                ApplicationRegistry::additivePush<float>(ApplicationRegistry::Key::PROCESSED, serialized.size());
             }
 
             {

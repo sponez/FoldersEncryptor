@@ -20,6 +20,12 @@ namespace fe {
                     inline static const std::u8string BIND_STORAGE_FLAG_KEY = u8"bindStorageFlag";
                     inline static const bool DEFAULT_BIND_STORAGE_FLAG_VALUE = false;
 
+                    inline static const std::u8string THREAD_COUNT_KEY = u8"threadCount";
+                    inline static const int DEFAULT_THREAD_COUNT_VALUE = 1;
+
+                    inline static const std::u8string BUFFER_SIZE_KEY = u8"bufferSize";
+                    inline static const int DEFAULT_BUFFER_SIZE_VALUE = 1;
+
                     inline static const std::u8string USER_KEY = u8"user";
                     inline static const std::u8string PASSWORD_KEY = u8"password";
             };
@@ -33,15 +39,17 @@ namespace fe {
             }
 
             static void saveProperties() {
-                std::string jsonFile =
+                std::u8string jsonFile =
                     PropertiesFileBuilder(&properties)
                         .save<bool>(Application::ApplicationProperties::INDIVIDUAL_PASSWORD_FLAG_KEY)
                         ->save<bool>(Application::ApplicationProperties::BIND_STORAGE_FLAG_KEY)
+                        ->save<int>(Application::ApplicationProperties::THREAD_COUNT_KEY)
+                        ->save<int>(Application::ApplicationProperties::BUFFER_SIZE_KEY)
                         ->build();
 
                 std::filesystem::path savePath = StringUtils::path(Application::ApplicationProperties::FILE);
                 std::ofstream out(savePath);
-                out << jsonFile;
+                out << StringUtils::string(jsonFile);
                 out.close();
             }
 
@@ -54,6 +62,12 @@ namespace fe {
                 )->loadOrDefault<bool>(
                     Application::ApplicationProperties::BIND_STORAGE_FLAG_KEY,
                     Application::ApplicationProperties::DEFAULT_BIND_STORAGE_FLAG_VALUE
+                )->loadOrDefault<int>(
+                    Application::ApplicationProperties::THREAD_COUNT_KEY,
+                    Application::ApplicationProperties::DEFAULT_THREAD_COUNT_VALUE
+                )->loadOrDefault<int>(
+                    Application::ApplicationProperties::BUFFER_SIZE_KEY,
+                    Application::ApplicationProperties::DEFAULT_BUFFER_SIZE_VALUE
                 );
             }
     };

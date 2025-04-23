@@ -15,9 +15,9 @@ namespace fe {
         public:
             struct Item {
                 public:
-                    std::string label;
+                    std::u8string label;
 
-                    Item(const std::string& label): label(label) {}
+                    Item(const std::u8string& label): label(label) {}
 
                     virtual float getWidth() = 0;
                     virtual float getHeight() = 0;
@@ -29,7 +29,7 @@ namespace fe {
                     ImVec2 standartSize = GuiWindow::properties.getPropertyValue<ImVec2>(GuiWindow::GuiWindowProperties::BUTTON_SIZE_KEY);
                     std::function<void()> function;
 
-                    Button(const std::string& label, const std::function<void()>& function): Item{label}, function(function) {}
+                    Button(const std::u8string& label, const std::function<void()>& function): Item{label}, function(function) {}
 
                     float getWidth() override {
                         return standartSize.x * SdlController::properties.scale.first;
@@ -45,7 +45,7 @@ namespace fe {
                         float windowWidth = ImGui::GetWindowSize().x;
         
                         ImGui::SetCursorPosX((windowWidth - buttonWidth) * 0.5f);
-                        if (ImGui::Button(label.c_str(), ImVec2(buttonWidth , buttonHeight))) {
+                        if (ImGui::Button(StringUtils::string(label).c_str(), ImVec2(buttonWidth , buttonHeight))) {
                             function();
                         }
                     }
@@ -56,7 +56,7 @@ namespace fe {
                     char* buffer;
                     const std::size_t& bufferSize;
 
-                    InputText(const std::string& label, char* buffer, const std::size_t& bufferSize)
+                    InputText(const std::u8string& label, char* buffer, const std::size_t& bufferSize)
                         : Item{label}, buffer(buffer), bufferSize(bufferSize) {}
 
                     float getWidth() override {
@@ -80,32 +80,32 @@ namespace fe {
                 
                         ImGui::SetCursorPosX((windowWidth - inputWidth) * 0.5f);
                         ImGui::PushItemWidth(inputWidth);
-                        ImGui::InputText(label.c_str(), buffer, bufferSize);
+                        ImGui::InputText(StringUtils::string(label).c_str(), buffer, bufferSize);
                         ImGui::PopItemWidth();
                     }
             };
 
             struct Text: public Item {
                 public:
-                    std::string text;
+                    std::u8string text;
 
-                    Text(const std::string& label, const std::string& text)
+                    Text(const std::u8string& label, const std::u8string& text)
                         : Item{label}, text(text) {}
 
                     float getWidth() override {
-                        return ImGui::CalcTextSize(text.c_str()).x;
+                        return ImGui::CalcTextSize(StringUtils::string(text).c_str()).x;
                     }
 
                     float getHeight() override {
-                        return ImGui::CalcTextSize(text.c_str()).y;
+                        return ImGui::CalcTextSize(StringUtils::string(text).c_str()).y;
                     }
 
                     void draw() override {
-                        float textWidth = ImGui::CalcTextSize(text.c_str()).x;
+                        float textWidth = ImGui::CalcTextSize(StringUtils::string(text).c_str()).x;
                         float windowWidth = ImGui::GetWindowSize().x;
                         
                         ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5f);
-                        ImGui::TextUnformatted(text.c_str());
+                        ImGui::TextUnformatted(StringUtils::string(text).c_str());
                     }
             };
 

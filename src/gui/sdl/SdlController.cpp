@@ -43,7 +43,7 @@ namespace fe {
     }
 
     void SdlController::saveProperties() {
-        std::string jsonFile =
+        std::u8string jsonFile =
             PropertiesFileBuilder(&properties)
                 .save<int>(SdlController::SdlProperties::MONITOR_ID_KEY)
                 ->save<int>(SdlController::SdlProperties::WINDOW_POSITION_X_KEY)
@@ -55,7 +55,7 @@ namespace fe {
         std::filesystem::path savePath = StringUtils::path(SdlController::SdlProperties::FILE);
         std::filesystem::create_directory(savePath.parent_path());
         std::ofstream out(savePath);
-        out << jsonFile;
+        out << StringUtils::string(jsonFile);
         out.close();
     }
 

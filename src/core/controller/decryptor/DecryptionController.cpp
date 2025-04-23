@@ -2,14 +2,30 @@
 
 #include <cstring>
 
+#include "../../../application/Application.hpp"
+#include "../../../application/ApplicationRegistry.hpp"
+
 namespace fe {
     void DecryptionController::decrypt(
         std::filesystem::path outputPath,
-        std::filesystem::path decryptedFilePath,
-        std::array<char, 256>& password,
-        const std::size_t& threadCount,
-        std::atomic<std::size_t>* bytesProcessed
+        std::filesystem::path decryptedFilePath
     ) {
+        std::uint8_t threadCount = Application::properties.getPropertyValue<int>(Application::ApplicationProperties::BUFFER_SIZE_KEY);
+        std::uint8_t bufferSize = Application::properties.getPropertyValue<int>(Application::ApplicationProperties::THREAD_COUNT_KEY);
+
+        std::optional<std::u8string> username;
+        std::optional<std::u8string> password;
+        if (*ApplicationRegistry::pull<bool>(ApplicationRegistry::Key::AUTHORIZATION_SKIPED)) {
+            username = std::nullopt;
+            password = std::nullopt;
+        } else {
+            username = Application::properties.getPropertyValue<std::u8string>(Application::ApplicationProperties::USER_KEY);
+            password =  Application::properties.getPropertyValue<std::u8string>(Application::ApplicationProperties::PASSWORD_KEY);
+        }
+
+        std::optional<std::u8string> filePassword = ApplicationRegistry::pull<std::u8string>(ApplicationRegistry::Key::FILE_PASSWORD);
+        std::optional<std::u8string> usbId = ApplicationRegistry::pull<std::u8string>(ApplicationRegistry::Key::USB_ID);
+
         std::ifstream in(decryptedFilePath, std::ios::binary);
         if (!in) {
             throw std::runtime_error("Failed to open decryped file");
@@ -18,11 +34,18 @@ namespace fe {
         DecryptingReader reader(in, threadCount);
 
         Chunk saltChank = reader.readSalt();
-        initReaderContext(saltChank, password, reader);
+        initReaderContext(
+            saltChank,
+            username,
+            password,
+            filePassword,
+            usbId,
+            reader
+        );
 
         Chunk currentChunk = reader.readNextFileChunk();
         while (currentChunk.tag() != Chunk::Tag::FE_END_OF_STREAM) {
-            recreateFile(currentChunk, outputPath, reader, bytesProcessed);
+            recreateFile(currentChunk, outputPath, reader);
             currentChunk = reader.readNextFileChunk();
         }
 
@@ -30,12 +53,27 @@ namespace fe {
         in.close();
     }
 
-    void DecryptionController::initReaderContext(Chunk &saltChunk, std::array<char, 256>& password, DecryptingReader &reader) {
-        auto key = ControllerUtils::getKeyAndDestroyPassword(password, saltChunk.data());
+    void DecryptionController::initReaderContext(
+        Chunk &saltChunk,
+        const std::optional<std::u8string>& usernameHash,
+        const std::optional<std::u8string>& passwordHash,
+        const std::optional<std::u8string>& filePasswordHash,
+        const std::optional<std::u8string>& usbIdHash,
+        DecryptingReader &reader
+    ) {
+        auto key = ControllerUtils::getKey(
+            usernameHash,
+            passwordHash,
+            filePasswordHash,
+            usbIdHash,
+            saltChunk.data()
+        );
+
         auto saltCopy = std::shared_ptr<unsigned char[]>(
             new unsigned char[Chunk::SALT_SIZE],
             std::default_delete<unsigned char[]>()
         );
+
         std::memcpy(saltCopy.get(), saltChunk.data(), Chunk::SALT_SIZE);
         auto salt = std::static_pointer_cast<const unsigned char[]>(saltCopy);
 
@@ -45,10 +83,12 @@ namespace fe {
     void DecryptionController::recreateFile(
         Chunk& pathChunk,
         const std::filesystem::path& outputPath,
-        DecryptingReader &reader,
-        std::atomic<std::size_t>* bytesProcessed
+        DecryptingReader &reader
     ) {
-        std::string pathStr(reinterpret_cast<const char*>(pathChunk.data()), pathChunk.size());
+        std::u8string pathStr = std::u8string(
+            reinterpret_cast<const char*>(pathChunk.data()),
+            reinterpret_cast<const char*>(pathChunk.data() + pathChunk.size())
+        );
         std::filesystem::path outputFilePath = outputPath / std::filesystem::path(pathStr);
         
         std::filesystem::create_directories(outputFilePath.parent_path());
@@ -61,7 +101,7 @@ namespace fe {
             }
 
             out.write(reinterpret_cast<const char*>(currentChunk.data()), static_cast<std::streamsize>(currentChunk.size()));
-            bytesProcessed->fetch_add(currentChunk.size());
+            ApplicationRegistry::additivePush<float>(ApplicationRegistry::Key::PROCESSED, currentChunk.size());
             currentChunk = reader.readNextFileChunk();
         }
 

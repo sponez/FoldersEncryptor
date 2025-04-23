@@ -12,9 +12,9 @@
 namespace fe {
     class LoginGuiWindow: public GuiWindow {
         private:
-            inline static const std::string USERNAME_FIELD = "Username";
-            inline static const std::string PASSWORD_FIELD = "Password";
-            inline static const std::string OK_BUTTON_NAME = "OK";
+            inline static const std::u8string USERNAME_FIELD = u8"Username";
+            inline static const std::u8string PASSWORD_FIELD = u8"Password";
+            inline static const std::u8string OK_BUTTON_NAME = u8"OK";
 
             LoginGuiWindow() = default;
             ~LoginGuiWindow() = default;

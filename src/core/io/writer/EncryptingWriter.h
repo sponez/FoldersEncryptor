@@ -17,9 +17,8 @@ namespace fe {
             std::ostream& stream,
             std::shared_ptr<const unsigned char[]> key,
             std::shared_ptr<const unsigned char[]> salt,
-            const std::size_t& threadCount,
-            std::atomic<std::size_t>* bytesProcessed
-        ): outStream(stream), chunkSerializer(Encryptor(key, salt)), bytesProcessed(bytesProcessed) {
+            const std::size_t& threadCount
+        ): outStream(stream), chunkSerializer(Encryptor(key, salt)) {
             this->threadCount = threadCount;
             startSerializerThreads();
             startWriterThread();
@@ -37,8 +36,6 @@ namespace fe {
         void close();
 
     private:
-        std::atomic<std::size_t>* bytesProcessed;
-
         std::ostream& outStream;
         ChunkSerializer chunkSerializer;
 

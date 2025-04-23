@@ -22,12 +22,11 @@ namespace fe {
 
             template <SupportedJsonType T>
             PropertiesFileBuilder* save(const std::u8string& key) {
-                std::string keyStr = StringUtils::string(key);
-                rapidjson::Value nameValue(keyStr.c_str(), allocator);
+                rapidjson::Value nameValue(StringUtils::string(key).c_str(), allocator);
 
-                if constexpr (std::is_same_v<T, std::string>) {
-                    std::string value = properties->getPropertyValue<std::string>(key);
-                    rapidjson::Value valueValue(value.c_str(), allocator);
+                if constexpr (std::is_same_v<T, std::u8string>) {
+                    std::u8string value = properties->getPropertyValue<std::u8string>(key);
+                    rapidjson::Value valueValue(StringUtils::string(value).c_str(), allocator);
                     document.AddMember(nameValue, valueValue, allocator);
                 } else if constexpr (std::is_same_v<T, ImVec2>) {
                     ImVec2 value = properties->getPropertyValue<ImVec2>(key);
@@ -52,12 +51,12 @@ namespace fe {
                 return this;
             }
 
-            std::string build() {
+            std::u8string build() {
                 rapidjson::StringBuffer buffer;
                 rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(buffer);
                 document.Accept(writer);
 
-                return buffer.GetString();
+                return StringUtils::u8string(buffer.GetString());
             }
 
         private:

@@ -12,19 +12,23 @@ namespace fe {
         public:
             static void decrypt(
                 std::filesystem::path outputPath,
-                std::filesystem::path decryptedFilePath,
-                std::array<char, 256>& password,
-                const std::size_t& threadCount,
-                std::atomic<std::size_t>* bytesProcessed
+                std::filesystem::path decryptedFilePath
             );
         
         private:
-            static void initReaderContext(Chunk& saltChunk, std::array<char, 256>& password, DecryptingReader& reader);
+            static void initReaderContext(
+                Chunk& saltChunk,
+                const std::optional<std::u8string>& usernameHash,
+                const std::optional<std::u8string>& passwordHash,
+                const std::optional<std::u8string>& filePasswordHash,
+                const std::optional<std::u8string>& usbIdHash,
+                DecryptingReader& reader
+            );
+            
             static void recreateFile(
                 Chunk& pathChunk,
                 const std::filesystem::path& outputPath,
-                DecryptingReader& reader,
-                std::atomic<std::size_t>* bytesProcessed
+                DecryptingReader& reader
             );
     };
 }

@@ -14,7 +14,7 @@
 namespace fe {
     class DecryptingReader {
         public:
-            DecryptingReader(std::istream& stream, const std::size_t& threadCount): inStream(stream), threadCount(threadCount) {};
+            DecryptingReader(std::istream& stream, const int& threadCount): inStream(stream), threadCount(threadCount) {};
             ~DecryptingReader() = default;
 
             void setContext(
@@ -54,12 +54,12 @@ namespace fe {
 
             std::vector<std::thread> deserializerThreads;
             std::thread readerThread;
-            std::size_t threadCount;
+            int threadCount;
             std::mutex _mutex;
 
             std::mutex workerMutex;
-            std::atomic<std::size_t> activeDeserialaizers{0};
-            std::atomic<std::size_t> activeWriters{0};
+            std::atomic<int> activeDeserialaizers{0};
+            std::atomic<int> activeWriters{0};
             std::condition_variable workersFinished;
 
             Chunk::Tag readTag();

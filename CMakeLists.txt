@@ -52,8 +52,14 @@ set(APP_SOURCES
     src/gui/window/login/LoginGuiWindowController.cpp
     src/gui/window/login/LoginWindowAction.hpp
     src/gui/window/functional/FunctionalGuiWindow.hpp
-    src/gui/window/functional/FunctionalGuiWindowController.hpp
+    src/gui/window/functional/FunctionalGuiWindowController.cpp
     src/gui/window/functional/FunctionalWindowAction.hpp
+    src/gui/window/password/FilePasswordGuiWindow.hpp
+    src/gui/window/password/FilePasswordGuiWindowController.hpp
+    src/gui/window/password/FilePasswordWindowAction.hpp
+    src/gui/window/progressbar/ProgressBarGuiWindow.hpp
+    src/gui/window/progressbar/ProgressBarGuiWindowController.hpp
+    src/gui/window/progressbar/ProgressBarWindowAction.hpp
     src/gui/window/properties/PropertiesGuiWindow.hpp
     src/gui/window/properties/PropertiesGuiWindowController.cpp
     src/gui/window/properties/PropertiesWindowAction.hpp

@@ -16,7 +16,7 @@ namespace fe {
         if (statfs(exePath, &buf) != 0) return false;
 
         std::string fsType = buf.f_fstypename;
-        return fsType == "msdos" || fsType == "exfat"; // типичные для USB-дисков
+        return fsType == "msdos" || fsType == "exfat";
     }
 }
 #endif

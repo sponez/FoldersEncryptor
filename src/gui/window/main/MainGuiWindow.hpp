@@ -13,8 +13,8 @@
 namespace fe {
     class MainGuiWindow: public GuiWindow {
         private:
-            inline static const std::string LOGIN_BUTTON_NAME = "Login";
-            inline static const std::string EXIT_BUTTON_NAME = "Exit";
+            inline static const std::u8string LOGIN_BUTTON_NAME = u8"Login";
+            inline static const std::u8string EXIT_BUTTON_NAME = u8"Exit";
 
             MainGuiWindow() = default;
             ~MainGuiWindow() = default;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <map>
+#include <stdexcept>
 #include <string>
 #include <variant>
 
@@ -9,14 +10,22 @@
 #include "../string/StringUtils.hpp"
 
 namespace fe {
-    using Property = std::variant<int, float, bool, std::string, ImVec2, ImVec4>;
+    using Property =
+        std::variant<
+            int,
+            float,
+            bool,
+            std::u8string,
+            ImVec2,
+            ImVec4
+        >;
 
     template <typename T>
     concept SupportedJsonType =
         std::same_as<T, int> ||
         std::same_as<T, float> ||
         std::same_as<T, bool> ||
-        std::same_as<T, std::string> ||
+        std::same_as<T, std::u8string> ||
         std::same_as<T, ImVec2> ||
         std::same_as<T, ImVec4>;
 

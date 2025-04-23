@@ -1,9 +1,14 @@
 #pragma once
 
+#include <sodium.h>
+
 #include "FunctionalGuiWindow.hpp"
 #include "FunctionalWindowAction.hpp"
 #include "../GuiWindowId.hpp"
 #include "../abstract/GuiWindowController.hpp"
+#include "../../../core/enctyption/utils/EncryptionInfo.hpp"
+#include "../../../utils/storage/StorageChecker.hpp"
+#include "../../../utils/string/StringUtils.hpp"
 
 namespace fe {
     class FunctionalGuiWindowController: public GuiWindowController {
@@ -19,41 +24,6 @@ namespace fe {
                 return instance;
             }
         
-            std::optional<GuiWindowId> process() override {
-                window->setAndDraw();
-
-                bool bindToStorageId = Application::properties.getPropertyValue<bool>(Application::ApplicationProperties::BIND_STORAGE_FLAG_KEY);
-                switch (window->action) {
-                    case FunctionalWindowAction::ENCRYPT: {
-                        window->action = FunctionalWindowAction::NONE;
-
-                        bool usePerFilePassword = Application::properties.getPropertyValue<bool>(Application::ApplicationProperties::INDIVIDUAL_PASSWORD_FLAG_KEY);
-                        if (usePerFilePassword) {
-                            return GuiWindowId::FILE_PASSWORD;
-                        }
-                        
-                        return GuiWindowId::PROGRESS_BAR;
-                    }
-
-                    case FunctionalWindowAction::DECTYPT:
-                        window->action = FunctionalWindowAction::NONE;
-                        return GuiWindowId::PROGRESS_BAR;
-
-                    case FunctionalWindowAction::TEMPORARY_OPEN:
-                        window->action = FunctionalWindowAction::NONE;
-                        return GuiWindowId::PROGRESS_BAR;
-
-                    case FunctionalWindowAction::PROPERTIES:
-                        window->action = FunctionalWindowAction::NONE;
-                        return GuiWindowId::PROPERTIES;
-
-                    case FunctionalWindowAction::BACK:
-                        window->action = FunctionalWindowAction::NONE;
-                        return GuiWindowId::MAIN;
-
-                    default:
-                        return std::nullopt;
-                }
-            }
+            std::optional<GuiWindowId> process() override;
     };
 }
