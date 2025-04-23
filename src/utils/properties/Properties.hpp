@@ -50,7 +50,7 @@ namespace fe {
             }
 
             template<SupportedJsonType T>
-            void setPropertyValue(const std::u8string& propertyName, const T& value) {
+            void setPropertyValue(std::u8string propertyName, T value) {
                 state[propertyName] = value;
             }
     };

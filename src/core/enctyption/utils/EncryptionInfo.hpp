@@ -29,7 +29,7 @@ namespace fe {
         }
     };
     
-    EncryptionInfo pullEncryptionInfo() {
+    inline static EncryptionInfo pullEncryptionInfo() {
         auto file = *ApplicationRegistry::pull<std::filesystem::path>(ApplicationRegistry::Key::FILE_TO_DECRYPT);
         auto inputStream = std::ifstream(file, std::ios::binary);
 

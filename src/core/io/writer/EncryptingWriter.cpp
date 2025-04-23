@@ -1,8 +1,19 @@
 #include "EncryptingWriter.h"
 
+#include "../../enctyption/utils/EncryptionInfo.hpp"
 #include "../../../application/ApplicationRegistry.hpp"
 
 namespace fe {
+    void EncryptingWriter::writeEncryptionInfo() {
+        EncryptionInfo info;
+        info.main = *ApplicationRegistry::pull<bool>(ApplicationRegistry::Key::AUTHORIZATION_OK);
+        info.filePasswordFlag = ApplicationRegistry::containsAny(ApplicationRegistry::Key::FILE_PASSWORD);
+        info.usbFlag = ApplicationRegistry::containsAny(ApplicationRegistry::Key::USB_ID);
+        
+        uint8_t flags = info.toByte();
+        outStream.write(reinterpret_cast<const char*>(&flags), 1);
+    }
+
     void EncryptingWriter::writeSalt(const unsigned char* salt) {
         Chunk saltChunk = Chunk::salt(salt);
         queueToEncrypt.push(saltChunk, index);
@@ -102,7 +113,9 @@ namespace fe {
             SerializedChunk serialized;
             while (queueToWrite.pop(serialized)) {
                 synchronizedWrite(serialized);
-                ApplicationRegistry::additivePush<float>(ApplicationRegistry::Key::PROCESSED, serialized.size());
+
+                auto x = *ApplicationRegistry::pull<std::size_t>(ApplicationRegistry::Key::PROCESSED);
+                ApplicationRegistry::push(ApplicationRegistry::Key::PROCESSED, x + serialized.size());
             }
 
             {

@@ -3,6 +3,11 @@
 #include <cstring>
 
 namespace fe {
+    void DecryptingReader::skipDecryptionInfo() {
+        char byte;
+        inStream.read(&byte, 1);
+    }
+
     Chunk DecryptingReader::readSalt() {
         auto tag = readTag();
         if (tag != Chunk::Tag::FE_SALT) {

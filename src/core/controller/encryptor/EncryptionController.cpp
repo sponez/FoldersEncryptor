@@ -9,19 +9,19 @@ namespace fe {
         std::filesystem::path rootPath,
         const std::vector<std::filesystem::path>& filesPaths
     ) {
-        std::uint8_t threadCount = Application::properties.getPropertyValue<int>(Application::ApplicationProperties::BUFFER_SIZE_KEY);
-        std::uint8_t bufferSize = Application::properties.getPropertyValue<int>(Application::ApplicationProperties::THREAD_COUNT_KEY);
+        int threadCount = Application::properties.getPropertyValue<int>(Application::ApplicationProperties::THREAD_COUNT_KEY);
+        int bufferSize = Application::properties.getPropertyValue<int>(Application::ApplicationProperties::BUFFER_SIZE_KEY);
 
         std::optional<std::u8string> username;
         std::optional<std::u8string> password;
-        if (*ApplicationRegistry::pull<bool>(ApplicationRegistry::Key::AUTHORIZATION_SKIPED)) {
-            username = std::nullopt;
-            password = std::nullopt;
-        } else {
+        if (*ApplicationRegistry::pull<bool>(ApplicationRegistry::Key::AUTHORIZATION_OK)) {
             username = Application::properties.getPropertyValue<std::u8string>(Application::ApplicationProperties::USER_KEY);
             password =  Application::properties.getPropertyValue<std::u8string>(Application::ApplicationProperties::PASSWORD_KEY);
+        } else {
+            username = std::nullopt;
+            password = std::nullopt;
         }
-
+        
         std::optional<std::u8string> filePassword = ApplicationRegistry::pull<std::u8string>(ApplicationRegistry::Key::FILE_PASSWORD);
         std::optional<std::u8string> usbId = ApplicationRegistry::pull<std::u8string>(ApplicationRegistry::Key::USB_ID);
 
@@ -42,12 +42,15 @@ namespace fe {
             );
 
         EncryptingWriter writer(out, key, salt, threadCount);
+        writer.writeEncryptionInfo();
         writer.writeSalt(salt.get());
         for (auto filePath: filesPaths) {
             writer.writeFile(rootPath, filePath, bufferSize);
         }
         writer.addEndTag();
         writer.close();
+
+        ApplicationRegistry::push(ApplicationRegistry::Key::RUNNING, false);
 
         out.close();
     }

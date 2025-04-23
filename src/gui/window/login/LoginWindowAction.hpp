@@ -4,6 +4,7 @@ namespace fe {
     enum class LoginWindowAction {
         NONE,
         HASHING,
+        SKIP,
         BACK
     };
 }

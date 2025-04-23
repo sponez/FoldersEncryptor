@@ -9,6 +9,7 @@
 #include "../GuiWindowId.hpp"
 #include "../abstract/GuiWindowController.hpp"
 #include "../../../utils/string/StringUtils.hpp"
+#include "../../../application/ApplicationRegistry.hpp"
 
 namespace fe {
     class LoginGuiWindowController: public GuiWindowController {
@@ -31,6 +32,12 @@ namespace fe {
                     case LoginWindowAction::HASHING: {
                         window->action = LoginWindowAction::NONE;
 
+                        if (window->username.empty() || window->password.empty()) {
+                            return std::nullopt;
+                        }
+
+                        ApplicationRegistry::push(ApplicationRegistry::Key::AUTHORIZATION_OK, true);
+
                         saveProperties(
                             StringUtils::hashString(std::u8string(window->username.begin(), window->username.end())),
                             StringUtils::hashString(std::u8string(window->password.begin(), window->password.end()))
@@ -41,6 +48,12 @@ namespace fe {
 
                         return GuiWindowId::FUNCTIONAL;
                     }
+
+                    case LoginWindowAction::SKIP:
+                        window->action = LoginWindowAction::NONE;
+                        ApplicationRegistry::push(ApplicationRegistry::Key::AUTHORIZATION_OK, false);
+                        return GuiWindowId::FUNCTIONAL;
+
                     case LoginWindowAction::BACK:
                         window->action = LoginWindowAction::NONE;
                         return GuiWindowId::MAIN;

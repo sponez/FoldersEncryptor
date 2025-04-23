@@ -20,7 +20,7 @@ namespace fe {
     class ApplicationRegistry {
         public:
             enum class Key {
-                AUTHORIZATION_SKIPED,
+                AUTHORIZATION_OK,
                 CURRENT_ACTION,
                 DECRYPTION_INFO,
                 FILE_PASSWORD,
@@ -38,24 +38,6 @@ namespace fe {
                 std::scoped_lock lock(mutex);
                 state[paramKey] = paramValue;
             }
-
-            template<typename T>
-            static void additivePush(Key paramKey, const std::any& paramValue) {
-                std::scoped_lock lock(mutex);
-
-                if constexpr (supportsPlusAssign<T>) {
-                    if (state.contains(paramKey) && state[paramKey].type() == typeid(T) && paramValue.type() == typeid(T)) {
-                        const auto& a = std::any_cast<const T&>(state[paramKey]);
-                        const auto& b = std::any_cast<const T&>(paramValue);
-                        state[paramKey] = a + b;
-                    } else {
-                        throw std::runtime_error("Unable add this type");
-                    }
-                } else {
-                    throw std::runtime_error("This type is not support adding");
-                }
-            }
-
 
             template <typename T>
             static std::optional<T> pull(Key paramKey) {

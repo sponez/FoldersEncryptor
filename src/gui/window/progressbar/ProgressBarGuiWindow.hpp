@@ -28,9 +28,15 @@ namespace fe {
 
         protected:
             void draw() override {
-                if (ApplicationRegistry::pull<bool>(ApplicationRegistry::Key::RUNNING)) {
-                    float progress = *ApplicationRegistry::pull<float>(ApplicationRegistry::Key::PROCESSED) / sizeToProcess;
-                    progress = std::min(progress, 1.0f);
+                if (*ApplicationRegistry::pull<bool>(ApplicationRegistry::Key::RUNNING)) {
+                    float progress;
+                    if (sizeToProcess == 0) {
+                        progress = 0.0f;
+                    } else {
+                        progress = (float)*ApplicationRegistry::pull<std::size_t>(ApplicationRegistry::Key::PROCESSED) / (float)sizeToProcess;
+                        progress = std::min(progress, 1.0f);
+                    }
+
                     ImGui::ProgressBar(progress, ImVec2(-1, 0));
                     ImGui::Text("%.1f%%", progress * 100.0f);
                 } else {

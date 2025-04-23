@@ -38,18 +38,20 @@ namespace fe {
                 if (!ApplicationRegistry::containsAny(ApplicationRegistry::Key::RUNNING)) {
                     auto action = *ApplicationRegistry::pull<FunctionalWindowAction>(ApplicationRegistry::Key::CURRENT_ACTION);
 
+                    ApplicationRegistry::push(ApplicationRegistry::Key::RUNNING, true);
+                    ApplicationRegistry::push(ApplicationRegistry::Key::PROCESSED, (std::size_t)0);
+
                     std::thread worker(
-                        [&]() { startAction(action); }
+                        [action, this]() { startAction(action); }
                     );
                     worker.detach();
-
-                    ApplicationRegistry::push(ApplicationRegistry::Key::RUNNING, true);
                 }
 
                 window->setAndDraw();
 
                 switch (window->action) {
                     case ProgressBarWindowAction::DONE:
+                        window->action = ProgressBarWindowAction::NONE;
                         ApplicationRegistry::flush();
                         return GuiWindowId::FUNCTIONAL;
 
@@ -68,17 +70,17 @@ namespace fe {
                         if (ApplicationRegistry::containsAny(ApplicationRegistry::Key::FOLDER_TO_ENCRYPT)) {
                             auto folder = *ApplicationRegistry::pull<std::filesystem::path>(ApplicationRegistry::Key::FOLDER_TO_ENCRYPT);
                             filesToEcnrypt = FilesUtils::unpack(folder);
-                            outputFilename = folder.u8string();
+                            outputFilename = folder.filename().u8string() + u8".fe";
                             rootPath = std::filesystem::path(folder.parent_path());
                         } else if (ApplicationRegistry::containsAny(ApplicationRegistry::Key::FILE_TO_ENCRYPT)) {
                             auto fileToEnctypt = *ApplicationRegistry::pull<std::filesystem::path>(ApplicationRegistry::Key::FILE_TO_ENCRYPT);
                             filesToEcnrypt.push_back(fileToEnctypt);
-                            outputFilename = fileToEnctypt.u8string();
+                            outputFilename = fileToEnctypt.filename().u8string() + u8".fe";
                             rootPath = std::filesystem::path(fileToEnctypt.parent_path());
                         } else if (ApplicationRegistry::containsAny(ApplicationRegistry::Key::FILES_TO_ENCRYPT)) {
                             filesToEcnrypt = *ApplicationRegistry::pull<std::vector<std::filesystem::path>>(ApplicationRegistry::Key::FILES_TO_ENCRYPT);
-                            outputFilename = *ApplicationRegistry::pull<std::u8string>(ApplicationRegistry::Key::OUPUT_FILE_NAME);
-                            rootPath = std::filesystem::path(filesToEcnrypt[0]);
+                            outputFilename = *ApplicationRegistry::pull<std::u8string>(ApplicationRegistry::Key::OUPUT_FILE_NAME) + u8".fe";
+                            rootPath = std::filesystem::path(filesToEcnrypt[0].parent_path());
                         } else {
                             throw std::runtime_error("Files to encrypt not found");
                         }

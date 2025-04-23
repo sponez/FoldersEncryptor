@@ -6,6 +6,7 @@
 #include "../utils/properties/Properties.hpp"
 #include "../utils/properties/PropertiesFileBuilder.hpp"
 #include "../utils/properties/PropertiesLoader.hpp"
+#include "../utils/storage/StorageChecker.hpp"
 
 namespace fe {
     class Application {
@@ -24,7 +25,7 @@ namespace fe {
                     inline static const int DEFAULT_THREAD_COUNT_VALUE = 1;
 
                     inline static const std::u8string BUFFER_SIZE_KEY = u8"bufferSize";
-                    inline static const int DEFAULT_BUFFER_SIZE_VALUE = 1;
+                    inline static const int DEFAULT_BUFFER_SIZE_VALUE = 4096;
 
                     inline static const std::u8string USER_KEY = u8"user";
                     inline static const std::u8string PASSWORD_KEY = u8"password";
@@ -69,6 +70,13 @@ namespace fe {
                     Application::ApplicationProperties::BUFFER_SIZE_KEY,
                     Application::ApplicationProperties::DEFAULT_BUFFER_SIZE_VALUE
                 );
+
+                if (!isRunningFromRemovableMedia()) {
+                    properties.setPropertyValue<bool>(
+                        Application::ApplicationProperties::BIND_STORAGE_FLAG_KEY,
+                        false
+                    );
+                }
             }
     };
 }

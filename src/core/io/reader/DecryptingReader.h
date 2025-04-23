@@ -26,6 +26,7 @@ namespace fe {
                 startDeserializerThreads();
             }
 
+            void skipDecryptionInfo();
             Chunk readSalt();
             Chunk readNextFileChunk();
             void close();

@@ -71,7 +71,7 @@ namespace fe {
                         auto files = Selector::selectMultipleFiles();
                         if (files) {
                             if (files->size() == 1) {
-                                ApplicationRegistry::push(ApplicationRegistry::Key::FILE_TO_ENCRYPT, *files);
+                                ApplicationRegistry::push(ApplicationRegistry::Key::FILE_TO_ENCRYPT, (*files)[0]);
                             } else {
                                 ApplicationRegistry::push(ApplicationRegistry::Key::FILES_TO_ENCRYPT, *files);
                             }
@@ -82,7 +82,7 @@ namespace fe {
                     if (ImGui::MenuItem(StringUtils::string(FOLDER_POPUP_OPTION_NAME).c_str())) {
                         auto folder = Selector::selectFolder();
                         if (folder) {
-                            ApplicationRegistry::push(ApplicationRegistry::Key::FOLDER_TO_ENCRYPT, *folder);
+                            ApplicationRegistry::push(ApplicationRegistry::Key::FOLDER_TO_ENCRYPT, (*folder)[0]);
                         }
                         ImGui::CloseCurrentPopup();
                     }
@@ -90,7 +90,13 @@ namespace fe {
                     ImGui::EndPopup();
                 }
 
-                if (ApplicationRegistry::containsAny(ApplicationRegistry::Key::FILES_TO_ENCRYPT, ApplicationRegistry::Key::FOLDER_TO_ENCRYPT)) {
+                if (
+                    ApplicationRegistry::containsAny(
+                        ApplicationRegistry::Key::FOLDER_TO_ENCRYPT,
+                        ApplicationRegistry::Key::FILE_TO_ENCRYPT,
+                        ApplicationRegistry::Key::FILES_TO_ENCRYPT
+                    )
+                ) {
                     FunctionalGuiWindow::getInstance().action = FunctionalWindowAction::ENCRYPT;
                 }
             }

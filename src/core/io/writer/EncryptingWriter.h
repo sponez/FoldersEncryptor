@@ -26,6 +26,7 @@ namespace fe {
 
         ~EncryptingWriter() = default;
 
+        void writeEncryptionInfo();
         void writeSalt(const unsigned char* salt);
         void writeFile(
             const std::filesystem::path rootPath,
