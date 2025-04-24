@@ -16,6 +16,7 @@ namespace fe {
     class ExplorerTool {
         public:
             static void openPathInExplorer(const std::filesystem::path& folderPath);
+            static bool isPathInside(const std::filesystem::path& sub, const std::filesystem::path& parent);
             static bool isFolderOpenInExplorer(const std::filesystem::path& targetPath);
             static void makeFolderHidden(const std::filesystem::path& folderPath);
             static void removeReadOnlyAttribute(const std::filesystem::path& path);

@@ -29,6 +29,19 @@ namespace fe {
         std::filesystem::remove_all(tempFolder);
     }
 
+    bool ExplorerTool::isPathInside(const std::filesystem::path& sub, const std::filesystem::path& parent) {
+        auto subAbs = std::filesystem::weakly_canonical(sub);
+        auto parentAbs = std::filesystem::weakly_canonical(parent);
+    
+        auto subIt = subAbs.begin();
+        auto parentIt = parentAbs.begin();
+    
+        for (; parentIt != parentAbs.end(); ++parentIt, ++subIt) {
+            if (subIt == subAbs.end() || *subIt != *parentIt) return false;
+        }
+        return true;
+    }
+
     bool ExplorerTool::isFolderOpenInExplorer(const std::filesystem::path& targetPath) {
         CoInitialize(nullptr);
         IShellWindows* shellWindows = nullptr;
@@ -72,7 +85,7 @@ namespace fe {
                 std::replace(path.begin(), path.end(), '/', '\\');
 
                 std::filesystem::path current = path;
-                if (std::filesystem::equivalent(current, targetPath)) {
+                if (isPathInside(current, targetPath)) {
                     release(&index, disp, browser);
                     shellWindows->Release();
                     return true;
