@@ -44,9 +44,18 @@ namespace fe {
                     ImGui_ImplSDL2_NewFrame();
                     ImGui::NewFrame();
 
-                    if (auto result = currentWindowController->process()) {
-                        switchWindow(result.value());
+                    try {
+                        if (auto result = currentWindowController->process()) {
+                            switchWindow(result.value());
+                        }
+                    } catch (const std::exception& e) {
+                        ApplicationRegistry::push(ApplicationRegistry::Key::ENCRYPTION_ERROR, std::string(e.what()));
+                        currentWindowController = &ErrorGuiWindowController::getInstance();
+                    } catch (...) {
+                        ApplicationRegistry::push(ApplicationRegistry::Key::ENCRYPTION_ERROR, "Unable to execute action");
+                        currentWindowController = &ErrorGuiWindowController::getInstance();
                     }
+                    
                     SdlController::render();
                 }
             }

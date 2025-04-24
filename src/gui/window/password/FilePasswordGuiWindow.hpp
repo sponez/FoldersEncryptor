@@ -53,7 +53,7 @@ namespace fe {
                 } else {
                     GuiUtils::itemGroup(
                         {
-                            std::make_shared<GuiUtils::InputText>(PASSWORD_FIELD, password.data(), password.size()),
+                            std::make_shared<GuiUtils::InputText>(PASSWORD_FIELD, password.data(), password.size(), true),
                             std::make_shared<GuiUtils::Button>(OK_BUTTON_NAME, [&]() { action = FilePasswordWindowAction::HASHING; })
                         }
                     );

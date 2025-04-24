@@ -48,6 +48,9 @@ namespace fe {
                             } catch (const std::exception& e) {
                                 ApplicationRegistry::push(ApplicationRegistry::Key::PROCESSING, false);
                                 ApplicationRegistry::push(ApplicationRegistry::Key::ENCRYPTION_ERROR, std::string(e.what()));
+                            } catch (...) {
+                                ApplicationRegistry::push(ApplicationRegistry::Key::PROCESSING, false);
+                                ApplicationRegistry::push(ApplicationRegistry::Key::ENCRYPTION_ERROR, "Unable to execute action");
                             }
                         }
                     );

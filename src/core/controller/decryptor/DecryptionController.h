@@ -17,8 +17,6 @@ namespace fe {
             );
         
         private:
-            inline static auto threadPool = ThreadPool();
-
             static void initReaderContext(
                 Chunk& saltChunk,
                 const std::optional<std::u8string>& usernameHash,
@@ -31,7 +29,8 @@ namespace fe {
             static void recreateFile(
                 Chunk& pathChunk,
                 const std::filesystem::path& outputPath,
-                DecryptingReader& reader
+                DecryptingReader& reader,
+                ThreadPool& threadPool
             );
     };
 }
