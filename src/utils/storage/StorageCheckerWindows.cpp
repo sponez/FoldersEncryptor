@@ -23,10 +23,11 @@ namespace fe {
         char path[MAX_PATH];
         GetModuleFileNameA(NULL, path, MAX_PATH);
 
-        char rootPath[4] = { path[0], ':', '\\', '\0' };
+        char driveLetter = path[0]; // 'C', 'D', ...
+        std::string devicePath = std::string(R"(\\.\)") + driveLetter + ":";
 
         HANDLE hDevice = CreateFileA(
-            rootPath,
+            devicePath.c_str(),
             0,
             FILE_SHARE_READ | FILE_SHARE_WRITE,
             nullptr,

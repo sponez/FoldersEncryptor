@@ -41,7 +41,12 @@ namespace fe {
                     ImGui::Text("%.1f%%", progress * 100.0f);
                 } else {
                     sizeToProcess = 0;
-                    action = ProgressBarWindowAction::DONE;
+
+                    if (auto ex = ApplicationRegistry::pull<std::string>(ApplicationRegistry::Key::ENCRYPTION_ERROR)) {
+                        action = ProgressBarWindowAction::DONE_WITH_ERROR;
+                    } else {
+                        action = ProgressBarWindowAction::DONE;
+                    }
                 }
             }
     };

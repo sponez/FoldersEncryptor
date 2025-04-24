@@ -8,6 +8,7 @@ namespace fe {
         FUNCTIONAL,
         PROPERTIES,
         FILE_PASSWORD,
-        PROGRESS_BAR
+        PROGRESS_BAR,
+        ENCRYPTION_ERROR
     };
 }

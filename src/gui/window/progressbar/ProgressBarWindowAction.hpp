@@ -3,6 +3,7 @@
 namespace fe {
     enum class ProgressBarWindowAction {
         NONE,
-        DONE
+        DONE,
+        DONE_WITH_ERROR
     };
 }

@@ -14,6 +14,7 @@
 #include "window/properties/PropertiesGuiWindowController.hpp"
 #include "window/password/FilePasswordGuiWindowController.hpp"
 #include "window/progressbar/ProgressBarGuiWindowController.hpp"
+#include "window/error/ErrorGuiWindowController.hpp"
 
 namespace fe {
     class GuiGlobalController {
@@ -117,6 +118,10 @@ namespace fe {
 
                     case GuiWindowId::PROGRESS_BAR:
                         currentWindowController = &ProgressBarGuiWindowController::getInstance();
+                        break;
+                    
+                    case GuiWindowId::ENCRYPTION_ERROR:
+                        currentWindowController = &ErrorGuiWindowController::getInstance();
                         break;
 
                     default:

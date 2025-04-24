@@ -42,7 +42,14 @@ namespace fe {
                     ApplicationRegistry::push(ApplicationRegistry::Key::PROCESSED, (std::size_t)0);
 
                     std::thread worker(
-                        [action, this]() { startAction(action); }
+                        [action, this]() {
+                            try {
+                                startAction(action);
+                            } catch (const std::exception& e) {
+                                ApplicationRegistry::push(ApplicationRegistry::Key::RUNNING, false);
+                                ApplicationRegistry::push(ApplicationRegistry::Key::ENCRYPTION_ERROR, std::string(e.what()));
+                            }
+                        }
                     );
                     worker.detach();
                 }
@@ -54,6 +61,10 @@ namespace fe {
                         window->action = ProgressBarWindowAction::NONE;
                         ApplicationRegistry::flush();
                         return GuiWindowId::FUNCTIONAL;
+
+                    case ProgressBarWindowAction::DONE_WITH_ERROR:
+                        window->action = ProgressBarWindowAction::NONE;
+                        return GuiWindowId::ENCRYPTION_ERROR;
 
                     default:
                         return std::nullopt;
@@ -114,6 +125,7 @@ namespace fe {
                         std::filesystem::path fileToDecrypt = *ApplicationRegistry::pull<std::filesystem::path>(ApplicationRegistry::Key::FILE_TO_DECRYPT);
                         findSizeToProcess(std::vector<std::filesystem::path>{fileToDecrypt});
                         Processor::processTemporaryDecryptOption(fileToDecrypt);
+
                         break;
                     }
 

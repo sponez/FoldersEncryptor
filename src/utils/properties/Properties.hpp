@@ -53,5 +53,9 @@ namespace fe {
             void setPropertyValue(std::u8string propertyName, T value) {
                 state[propertyName] = value;
             }
+
+            void removeProperty(std::u8string propertyName) {
+                state.erase(propertyName);
+            }
     };
 }

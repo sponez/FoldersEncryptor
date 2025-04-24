@@ -26,7 +26,7 @@ namespace fe {
 
         std::ifstream in(decryptedFilePath, std::ios::binary);
         if (!in) {
-            throw std::runtime_error("Failed to open decryped file");
+            return;
         }
 
         DecryptingReader reader(in, threadCount);

@@ -30,5 +30,8 @@ namespace fe {
         Application::properties.setPropertyValue<bool>(
             Application::ApplicationProperties::BIND_STORAGE_FLAG_KEY, PropertiesGuiWindow::bindToStorageId.value()
         );
+
+        Application::properties.removeProperty(Application::ApplicationProperties::USER_KEY);
+        Application::properties.removeProperty(Application::ApplicationProperties::PASSWORD_KEY);
     }
 }
