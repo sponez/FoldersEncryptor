@@ -28,7 +28,7 @@ namespace fe {
 
         protected:
             void draw() override {
-                if (*ApplicationRegistry::pull<bool>(ApplicationRegistry::Key::RUNNING)) {
+                if (*ApplicationRegistry::pull<bool>(ApplicationRegistry::Key::PROCESSING)) {
                     float progress;
                     if (sizeToProcess == 0) {
                         progress = 0.0f;

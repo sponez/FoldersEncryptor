@@ -25,10 +25,10 @@ namespace fe {
                     inline static const bool DEFAULT_BIND_STORAGE_FLAG_VALUE = false;
 
                     inline static const std::u8string THREAD_COUNT_KEY = u8"threadCount";
-                    inline static const int DEFAULT_THREAD_COUNT_VALUE = 1;
+                    inline static const int DEFAULT_THREAD_COUNT_VALUE = 2;
 
                     inline static const std::u8string BUFFER_SIZE_KEY = u8"bufferSize";
-                    inline static const int DEFAULT_BUFFER_SIZE_VALUE = 4096;
+                    inline static const int DEFAULT_BUFFER_SIZE_VALUE = 524288; // 512KB
 
                     inline static const std::u8string USER_KEY = u8"user";
                     inline static const std::u8string PASSWORD_KEY = u8"password";

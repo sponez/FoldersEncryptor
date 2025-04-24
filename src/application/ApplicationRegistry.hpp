@@ -30,7 +30,7 @@ namespace fe {
                 FOLDER_TO_ENCRYPT,
                 OUPUT_FILE_NAME,
                 PROCESSED,
-                RUNNING,
+                PROCESSING,
                 USB_ID
             };
 

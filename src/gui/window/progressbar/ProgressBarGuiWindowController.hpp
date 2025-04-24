@@ -35,10 +35,10 @@ namespace fe {
             }
 
             std::optional<GuiWindowId> process() override {
-                if (!ApplicationRegistry::containsAny(ApplicationRegistry::Key::RUNNING)) {
+                if (!ApplicationRegistry::containsAny(ApplicationRegistry::Key::PROCESSING)) {
                     auto action = *ApplicationRegistry::pull<FunctionalWindowAction>(ApplicationRegistry::Key::CURRENT_ACTION);
 
-                    ApplicationRegistry::push(ApplicationRegistry::Key::RUNNING, true);
+                    ApplicationRegistry::push(ApplicationRegistry::Key::PROCESSING, true);
                     ApplicationRegistry::push(ApplicationRegistry::Key::PROCESSED, (std::size_t)0);
 
                     std::thread worker(
@@ -46,7 +46,7 @@ namespace fe {
                             try {
                                 startAction(action);
                             } catch (const std::exception& e) {
-                                ApplicationRegistry::push(ApplicationRegistry::Key::RUNNING, false);
+                                ApplicationRegistry::push(ApplicationRegistry::Key::PROCESSING, false);
                                 ApplicationRegistry::push(ApplicationRegistry::Key::ENCRYPTION_ERROR, std::string(e.what()));
                             }
                         }
@@ -57,10 +57,11 @@ namespace fe {
                 window->setAndDraw();
 
                 switch (window->action) {
-                    case ProgressBarWindowAction::DONE:
+                    case ProgressBarWindowAction::DONE: {
                         window->action = ProgressBarWindowAction::NONE;
                         ApplicationRegistry::flush();
                         return GuiWindowId::FUNCTIONAL;
+                    }
 
                     case ProgressBarWindowAction::DONE_WITH_ERROR:
                         window->action = ProgressBarWindowAction::NONE;

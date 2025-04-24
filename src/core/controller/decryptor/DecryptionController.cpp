@@ -48,6 +48,7 @@ namespace fe {
             currentChunk = reader.readNextFileChunk();
         }
 
+        threadPool.shutdown();
         reader.close();
         in.close();
     }
@@ -84,6 +85,8 @@ namespace fe {
         const std::filesystem::path& outputPath,
         DecryptingReader &reader
     ) {
+        auto writeMutex = std::make_shared<std::mutex>();
+
         std::u8string pathStr = std::u8string(
             reinterpret_cast<const char*>(pathChunk.data()),
             reinterpret_cast<const char*>(pathChunk.data() + pathChunk.size())
@@ -91,20 +94,56 @@ namespace fe {
         std::filesystem::path outputFilePath = outputPath / std::filesystem::path(pathStr);
         
         std::filesystem::create_directories(outputFilePath.parent_path());
-        std::ofstream out(outputFilePath, std::ios::binary);
 
         Chunk currentChunk = reader.readNextFileChunk();
+
+        std::size_t MaxBufferSize = 8 * 1024 * 1024;
+        std::shared_ptr<std::vector<char>> currentBuffer = std::make_shared<std::vector<char>>();
+        currentBuffer->reserve(MaxBufferSize);
         while (currentChunk.tag() != Chunk::Tag::FE_END_OF_FILE) {
             if (currentChunk.tag() != Chunk::Tag::FE_FILE_CONTENT_BLOCK) {
                 throw std::runtime_error("Data integrity has been compromised");
             }
 
-            out.write(reinterpret_cast<const char*>(currentChunk.data()), static_cast<std::streamsize>(currentChunk.size()));
+            currentBuffer->insert(
+                currentBuffer->end(),
+                reinterpret_cast<const char*>(currentChunk.data()),
+                reinterpret_cast<const char*>(currentChunk.data() + currentChunk.size())
+            );
+
+            if (currentBuffer->size() >= MaxBufferSize) {
+                auto bufferToWrite = currentBuffer;
+                currentBuffer = std::make_shared<std::vector<char>>();
+                currentBuffer->reserve(MaxBufferSize);
+            
+                threadPool.submit(
+                    [outputFilePath, bufferToWrite, writeMutex]() {
+                        std::scoped_lock lock(*writeMutex);
+
+                        std::ofstream out(outputFilePath, std::ios::binary | std::ios::app);
+                        out.write(bufferToWrite->data(), bufferToWrite->size());
+    
+                        auto x = *ApplicationRegistry::pull<std::size_t>(ApplicationRegistry::Key::PROCESSED);
+                        ApplicationRegistry::push(ApplicationRegistry::Key::PROCESSED, x + bufferToWrite->size());
+                    }
+                );
+            }
+
             currentChunk = reader.readNextFileChunk();
         }
 
-        ApplicationRegistry::push(ApplicationRegistry::Key::RUNNING, false);
+        if (!currentBuffer->empty()) {
+            threadPool.submit(
+                [outputFilePath, currentBuffer, writeMutex]() {
+                    std::scoped_lock lock(*writeMutex);
 
-        out.close();
+                    std::ofstream out(outputFilePath, std::ios::binary | std::ios::app);
+                    out.write(currentBuffer->data(), currentBuffer->size());
+
+                    auto x = *ApplicationRegistry::pull<std::size_t>(ApplicationRegistry::Key::PROCESSED);
+                    ApplicationRegistry::push(ApplicationRegistry::Key::PROCESSED, x + currentBuffer->size());
+                }
+            );
+        }
     }
 }

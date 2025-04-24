@@ -25,6 +25,6 @@ namespace fe {
 
         private:
             static void secureDelete(const std::filesystem::path& path);
-            static std::filesystem::path createTemporaryDirectory();
+            static std::filesystem::path createTemporaryDirectory(std::filesystem::path path);
     };
 }

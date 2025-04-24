@@ -50,9 +50,6 @@ namespace fe {
         }
         writer.addEndTag();
         writer.close();
-
-        ApplicationRegistry::push(ApplicationRegistry::Key::RUNNING, false);
-
         out.close();
     }
 

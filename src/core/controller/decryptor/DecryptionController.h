@@ -6,6 +6,7 @@
 #include "../utils/ControllerUtils.h"
 #include "../../model/chunk/Chunk.h"
 #include "../../io/reader/DecryptingReader.h"
+#include "../../multithreading/ThreadPool.hpp"
 
 namespace fe {
     class DecryptionController {
@@ -16,6 +17,8 @@ namespace fe {
             );
         
         private:
+            inline static auto threadPool = ThreadPool();
+
             static void initReaderContext(
                 Chunk& saltChunk,
                 const std::optional<std::u8string>& usernameHash,

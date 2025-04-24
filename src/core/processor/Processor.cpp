@@ -22,6 +22,12 @@ namespace fe {
         for (auto path: filesPaths) {
             secureDelete(path);
         }
+
+        if (auto folder = ApplicationRegistry::pull<std::filesystem::path>(ApplicationRegistry::Key::FOLDER_TO_ENCRYPT)) {
+            std::filesystem::remove_all(*folder);
+        }
+
+        ApplicationRegistry::push(ApplicationRegistry::Key::PROCESSING, false);
     }
 
     void Processor::processDecryptOption(
@@ -34,10 +40,12 @@ namespace fe {
         );
 
         std::filesystem::remove_all(decryptedFilePath);
+
+        ApplicationRegistry::push(ApplicationRegistry::Key::PROCESSING, false);
     }
 
     void Processor::processTemporaryDecryptOption(std::filesystem::path decryptedFilePath) {
-        std::filesystem::path tempDir = createTemporaryDirectory();
+        std::filesystem::path tempDir = createTemporaryDirectory(decryptedFilePath.parent_path());
         DecryptionController::decrypt(
             tempDir,
             decryptedFilePath
@@ -48,6 +56,8 @@ namespace fe {
             std::this_thread::sleep_for(std::chrono::milliseconds(200));
         }
         std::filesystem::remove_all(tempDir);
+
+        ApplicationRegistry::push(ApplicationRegistry::Key::PROCESSING, false);
     }
 
     void Processor::secureDelete(const std::filesystem::path& path) {
@@ -62,10 +72,10 @@ namespace fe {
         std::filesystem::remove_all(path);
     }
 
-    std::filesystem::path Processor::createTemporaryDirectory() {
+    std::filesystem::path Processor::createTemporaryDirectory(std::filesystem::path path) {
         std::stringstream ss;
-        ss << "__fe_temp-" << std::rand() << "__";
-        std::filesystem::path tempDir = std::filesystem::temp_directory_path() / ss.str();
+        ss << ".temp-" << std::rand();
+        std::filesystem::path tempDir = path / ss.str();
         std::filesystem::create_directories(tempDir);
         ExplorerTool::makeFolderHidden(tempDir);
 
