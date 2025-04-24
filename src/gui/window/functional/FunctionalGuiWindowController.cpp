@@ -41,6 +41,10 @@ namespace fe {
                 ApplicationRegistry::push(ApplicationRegistry::Key::AUTHORIZATION_OK, decryptionInfo.authorization);
 
                 if (decryptionInfo.usbFlag) {
+                    if (!isRunningFromRemovableMedia()) {
+                        throw std::runtime_error("Unable to derypt with your environment");
+                    }
+
                     ApplicationRegistry::push(
                         ApplicationRegistry::Key::USB_ID,
                         StringUtils::hashString(getStorageDeviceId().value())
@@ -63,6 +67,10 @@ namespace fe {
                 ApplicationRegistry::push(ApplicationRegistry::Key::AUTHORIZATION_OK, decryptionInfo.authorization);
 
                 if (decryptionInfo.usbFlag) {
+                    if (!isRunningFromRemovableMedia()) {
+                        throw std::runtime_error("Unable to derypt with your environment");
+                    }
+                    
                     ApplicationRegistry::push(
                         ApplicationRegistry::Key::USB_ID,
                         StringUtils::hashString(getStorageDeviceId().value())

@@ -42,13 +42,15 @@ namespace fe {
             reader
         );
 
+        auto threadPool = ThreadPool();
+
         Chunk currentChunk = reader.readNextFileChunk();
         while (currentChunk.tag() != Chunk::Tag::FE_END_OF_STREAM) {
-            recreateFile(currentChunk, outputPath, reader);
+            recreateFile(currentChunk, outputPath, reader, threadPool);
             currentChunk = reader.readNextFileChunk();
         }
-
-        threadPool.shutdown();
+        
+        threadPool.join();
         reader.close();
         in.close();
     }
@@ -83,7 +85,8 @@ namespace fe {
     void DecryptionController::recreateFile(
         Chunk& pathChunk,
         const std::filesystem::path& outputPath,
-        DecryptingReader &reader
+        DecryptingReader &reader,
+        ThreadPool& threadPool
     ) {
         auto writeMutex = std::make_shared<std::mutex>();
 
@@ -122,6 +125,7 @@ namespace fe {
 
                         std::ofstream out(outputFilePath, std::ios::binary | std::ios::app);
                         out.write(bufferToWrite->data(), bufferToWrite->size());
+                        out.close();
     
                         auto x = *ApplicationRegistry::pull<std::size_t>(ApplicationRegistry::Key::PROCESSED);
                         ApplicationRegistry::push(ApplicationRegistry::Key::PROCESSED, x + bufferToWrite->size());
@@ -135,13 +139,14 @@ namespace fe {
         if (!currentBuffer->empty()) {
             threadPool.submit(
                 [outputFilePath, currentBuffer, writeMutex]() {
-                    std::scoped_lock lock(*writeMutex);
+            std::scoped_lock lock(*writeMutex);
 
-                    std::ofstream out(outputFilePath, std::ios::binary | std::ios::app);
-                    out.write(currentBuffer->data(), currentBuffer->size());
+            std::ofstream out(outputFilePath, std::ios::binary | std::ios::app);
+            out.write(currentBuffer->data(), currentBuffer->size());
+            out.close();
 
-                    auto x = *ApplicationRegistry::pull<std::size_t>(ApplicationRegistry::Key::PROCESSED);
-                    ApplicationRegistry::push(ApplicationRegistry::Key::PROCESSED, x + currentBuffer->size());
+            auto x = *ApplicationRegistry::pull<std::size_t>(ApplicationRegistry::Key::PROCESSED);
+            ApplicationRegistry::push(ApplicationRegistry::Key::PROCESSED, x + currentBuffer->size());
                 }
             );
         }

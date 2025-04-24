@@ -55,9 +55,10 @@ namespace fe {
                 public:
                     char* buffer;
                     const std::size_t& bufferSize;
+                    bool secure;
 
-                    InputText(const std::u8string& label, char* buffer, const std::size_t& bufferSize)
-                        : Item{label}, buffer(buffer), bufferSize(bufferSize) {}
+                    InputText(const std::u8string& label, char* buffer, const std::size_t& bufferSize, bool secure = false)
+                        : Item{label}, buffer(buffer), bufferSize(bufferSize), secure(secure) {}
 
                     float getWidth() override {
                         return
@@ -80,7 +81,11 @@ namespace fe {
                 
                         ImGui::SetCursorPosX((windowWidth - inputWidth) * 0.5f);
                         ImGui::PushItemWidth(inputWidth);
-                        ImGui::InputText(StringUtils::string(label).c_str(), buffer, bufferSize);
+                        if (secure) {
+                            ImGui::InputText(StringUtils::string(label).c_str(), buffer, bufferSize, ImGuiInputTextFlags_Password);
+                        } else {
+                            ImGui::InputText(StringUtils::string(label).c_str(), buffer, bufferSize);
+                        }
                         ImGui::PopItemWidth();
                     }
             };

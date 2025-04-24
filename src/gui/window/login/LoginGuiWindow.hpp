@@ -38,7 +38,7 @@ namespace fe {
                 GuiUtils::itemGroup(
                     {
                         std::make_shared<GuiUtils::InputText>(USERNAME_FIELD, username.data(), username.size()),
-                        std::make_shared<GuiUtils::InputText>(PASSWORD_FIELD, password.data(), password.size()),
+                        std::make_shared<GuiUtils::InputText>(PASSWORD_FIELD, password.data(), password.size(), true),
                         std::make_shared<GuiUtils::Button>(OK_BUTTON_NAME, []() {LoginGuiWindow::getInstance().action = LoginWindowAction::HASHING;})
                     }
                 );

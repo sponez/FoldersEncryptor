@@ -30,15 +30,19 @@ namespace fe {
             void draw() override {
                 std::string errorMessage = *ApplicationRegistry::pull<std::string>(ApplicationRegistry::Key::ENCRYPTION_ERROR);
 
-                ImGui::SetNextWindowSize(ImVec2(300, 0), ImGuiCond_Appearing);
+                ImVec2 size = ImGui::GetWindowSize();
+                ImGui::SetNextWindowSize(ImVec2(size.x * 0.8f, size.y * 0.8f), ImGuiCond_Appearing);
                 ImGui::OpenPopup("Error");
                 
                 if (ImGui::BeginPopupModal("Error", nullptr)) {
                     ImGui::TextWrapped("%s", errorMessage.c_str());
-                    if (ImGui::Button("OK")) {
-                        ImGui::CloseCurrentPopup();
-                        action = ErrorWindowAction::OK;
-                    }
+                    GuiUtils::Button(
+                        OK_BUTTON_NAME,
+                        [&]() {
+                            ImGui::CloseCurrentPopup();
+                            action = ErrorWindowAction::OK;
+                        }
+                    ).draw();
                     ImGui::EndPopup();
                 }
             }
